@@ -26,9 +26,9 @@ class _CotacaoScreenState extends State<CotacaoScreen> {
   late double saldoUSD;
   late double saldoEUR;
 
-  // Simulação de histórico para o gráfico
-  final List<double> historicoUSD = [5.0, 5.1, 5.2, 5.15, 5.18, 5.22, 5.20];
-  final List<double> historicoEUR = [5.4, 5.35, 5.38, 5.36, 5.40, 5.42, 5.39];
+  // Históricos dinâmicos para o gráfico
+  final List<double> historicoUSD = [];
+  final List<double> historicoEUR = [];
 
   @override
   void initState() {
@@ -40,11 +40,24 @@ class _CotacaoScreenState extends State<CotacaoScreen> {
   }
 
   Future<void> fetchCotacao() async {
-    final url = Uri.parse('https://api.exchangerate-api.com/v4/latest/BRL');
+    // Substitua 'sua_chave_aqui' pela sua chave da HG Brasil
+    final url = Uri.parse('https://api.hgbrasil.com/finance?format=json&key=784a4c53');
     final response = await http.get(url);
     if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final usd = data['results']['currencies']['USD']['buy'] * 1.0;
+      final eur = data['results']['currencies']['EUR']['buy'] * 1.0;
       setState(() {
-        cotacao = json.decode(response.body)['rates'];
+        cotacao = {
+          'USD': usd,
+          'EUR': eur,
+          'BRL': 1.0,
+        };
+        // Atualiza históricos (mantém no máximo 10 pontos)
+        historicoUSD.add(usd);
+        if (historicoUSD.length > 10) historicoUSD.removeAt(0);
+        historicoEUR.add(eur);
+        if (historicoEUR.length > 10) historicoEUR.removeAt(0);
         carregando = false;
       });
     } else {
@@ -229,15 +242,15 @@ class _CotacaoScreenState extends State<CotacaoScreen> {
                 : ListView(
                     padding: const EdgeInsets.all(16),
                     children: [
-                      const Text('Gráfico USD (simulado)', style: TextStyle(fontWeight: FontWeight.bold)),
+                      const Text('Gráfico USD', style: TextStyle(fontWeight: FontWeight.bold)),
                       buildGrafico(historicoUSD, Colors.blue),
                       const SizedBox(height: 10),
-                      const Text('Gráfico EUR (simulado)', style: TextStyle(fontWeight: FontWeight.bold)),
+                      const Text('Gráfico EUR', style: TextStyle(fontWeight: FontWeight.bold)),
                       buildGrafico(historicoEUR, Colors.green),
                       const SizedBox(height: 20),
                       ListTile(
                         title: const Text('USD'),
-                        trailing: Text('R\$ ${(1 / cotacao!['USD']).toStringAsFixed(2)}'),
+                        trailing: Text('R\$ ${cotacao!['USD'].toStringAsFixed(2)}'),
                       ),
                       ElevatedButton(
                         onPressed: () => comprarMoedaDialog('USD'),
@@ -246,7 +259,7 @@ class _CotacaoScreenState extends State<CotacaoScreen> {
                       const SizedBox(height: 10),
                       ListTile(
                         title: const Text('EUR'),
-                        trailing: Text('R\$ ${(1 / cotacao!['EUR']).toStringAsFixed(2)}'),
+                        trailing: Text('R\$ ${cotacao!['EUR'].toStringAsFixed(2)}'),
                       ),
                       ElevatedButton(
                         onPressed: () => comprarMoedaDialog('EUR'),
