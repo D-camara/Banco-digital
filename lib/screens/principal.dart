@@ -27,12 +27,14 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>? ?? {};
+    final args =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>? ??
+        {};
     nome = args['nome'] ?? nome;
     if (args['saldoBRL'] != null) saldoBRL = args['saldoBRL'];
     if (args['saldoUSD'] != null) saldoUSD = args['saldoUSD'];
     if (args['saldoEUR'] != null) saldoEUR = args['saldoEUR'];
-    if (args['saldoBTC'] != null) saldoBTC = args['saldoBTC']; // Recebe saldoBTC
+    if (args['saldoBTC'] != null) saldoBTC = args['saldoBTC'];
   }
 
   Future<void> _abrirCotacao() async {
@@ -43,7 +45,7 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
         'saldoBRL': saldoBRL,
         'saldoUSD': saldoUSD,
         'saldoEUR': saldoEUR,
-        'saldoBTC': saldoBTC, // Envia saldoBTC
+        'saldoBTC': saldoBTC,
       },
     );
     if (result is Map) {
@@ -51,7 +53,7 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
         saldoBRL = result['saldoBRL'] ?? saldoBRL;
         saldoUSD = result['saldoUSD'] ?? saldoUSD;
         saldoEUR = result['saldoEUR'] ?? saldoEUR;
-        saldoBTC = result['saldoBTC'] ?? saldoBTC; // Atualiza saldoBTC
+        saldoBTC = result['saldoBTC'] ?? saldoBTC;
       });
     }
   }
@@ -65,7 +67,7 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
         'saldoBRL': saldoBRL,
         'saldoUSD': saldoUSD,
         'saldoEUR': saldoEUR,
-        'saldoBTC': saldoBTC, // Envia saldoBTC
+        'saldoBTC': saldoBTC,
       },
     );
     if (result is Map) {
@@ -73,7 +75,7 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
         saldoBRL = result['saldoBRL'] ?? saldoBRL;
         saldoUSD = result['saldoUSD'] ?? saldoUSD;
         saldoEUR = result['saldoEUR'] ?? saldoEUR;
-        saldoBTC = result['saldoBTC'] ?? saldoBTC; // Atualiza saldoBTC
+        saldoBTC = result['saldoBTC'] ?? saldoBTC;
       });
     }
   }
@@ -82,61 +84,159 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Banco Digital')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text('Bem-vindo, $nome!', style: const TextStyle(fontSize: 22)),
-            const SizedBox(height: 20),
-            Card(
+      body: Column(
+        children: [
+          Expanded(
+            child: Container(
+              color: const Color(0xFF8A0F16),
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    const Text('Saldos:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text('Real (BRL):'),
-                        Text('R\$ ${saldoBRL.toStringAsFixed(2)}'),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text('Dólar (USD):'),
-                        Text('\$ ${saldoUSD.toStringAsFixed(2)}'),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text('Euro (EUR):'),
-                        Text('€ ${saldoEUR.toStringAsFixed(2)}'),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text('Bitcoin (BTC):'),
-                        Text('${saldoBTC.toStringAsFixed(6)} BTC'),
-                      ],
-                    ),
-                  ],
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        'Bem-vindo, $nome!',
+                        style: const TextStyle(fontSize: 22),
+                      ),
+                      const SizedBox(height: 20),
+                      Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            children: [
+                              // Linha do "Saldo:" alinhada igual às moedas
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16.0,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Text(
+                                      'Saldo:',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Opacity(
+                                      opacity: 0,
+                                      child: Text(
+                                        'R\$ ${saldoBRL.toStringAsFixed(2)}',
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 0),
+                              ExpansionTile(
+                                tilePadding: const EdgeInsets.symmetric(
+                                  horizontal: 16.0,
+                                ),
+                                title: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Text('Real (BRL):'),
+                                    Text('R\$ ${saldoBRL.toStringAsFixed(2)}'),
+                                  ],
+                                ),
+                                shape: const RoundedRectangleBorder(
+                                  side: BorderSide.none,
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(0),
+                                  ),
+                                ),
+                                collapsedShape: const RoundedRectangleBorder(
+                                  side: BorderSide.none,
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(0),
+                                  ),
+                                ),
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16.0,
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        const Text('Dólar (USD):'),
+                                        Text(
+                                          '\$ ${saldoUSD.toStringAsFixed(2)}',
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16.0,
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        const Text('Euro (EUR):'),
+                                        Text(
+                                          '€ ${saldoEUR.toStringAsFixed(2)}',
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16.0,
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        const Text('Bitcoin (BTC):'),
+                                        Text(
+                                          '${saldoBTC.toStringAsFixed(6)} BTC',
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-            const SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: _abrirCotacao,
-              child: const Text('Ver Cotação'),
+          ),
+          Expanded(
+            child: Container(
+              color: const Color(0xFF000000), // Cor da metade inferior
             ),
-            const SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: _abrirTransferencia,
-              child: const Text('Transferência'),
+          ),
+        ],
+      ),
+      bottomNavigationBar: Container(
+        color: const Color(0xFF000000),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            Expanded(
+              child: ElevatedButton(
+                onPressed: _abrirCotacao,
+                child: const Text('Ver Cotação'),
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: ElevatedButton(
+                onPressed: _abrirTransferencia,
+                child: const Text('Transferência'),
+              ),
             ),
           ],
         ),
