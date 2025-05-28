@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 class TransferenciaScreen extends StatefulWidget {
   final Map<String, dynamic>? args;
@@ -19,6 +20,44 @@ class _TransferenciaScreenState extends State<TransferenciaScreen> {
   late double saldoEUR;
   late String nome;
   String mensagem = '';
+
+  // Adicione esta função para abrir o scanner em um Dialog
+  Future<void> _abrirQRScanner() async {
+    String? resultado;
+    await showDialog(
+      context: context,
+      builder: (context) {
+        final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
+        QRViewController? controller;
+
+        return AlertDialog(
+          contentPadding: EdgeInsets.zero,
+          content: SizedBox(
+            width: 300,
+            height: 300,
+            child: QRView(
+              key: qrKey,
+              onQRViewCreated: (ctrl) {
+                controller = ctrl;
+                ctrl.scannedDataStream.listen((scanData) {
+                  controller?.pauseCamera();
+                  Navigator.of(context).pop(scanData.code);
+                });
+              },
+            ),
+          ),
+        );
+      },
+    ).then((value) {
+      resultado = value;
+    });
+
+    if (resultado != null) {
+      setState(() {
+        _destinatarioController.text = resultado!;
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -108,6 +147,13 @@ class _TransferenciaScreenState extends State<TransferenciaScreen> {
             TextField(
               controller: _destinatarioController,
               decoration: const InputDecoration(labelText: 'Destinatário'),
+            ),
+            const SizedBox(height: 10),
+            // Adicione o botão logo abaixo do campo destinatário
+            ElevatedButton.icon(
+              onPressed: _abrirQRScanner,
+              icon: Icon(Icons.qr_code_scanner),
+              label: Text('Ler QR code'),
             ),
             const SizedBox(height: 10),
             DropdownButton<String>(
