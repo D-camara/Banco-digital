@@ -97,9 +97,13 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
                     children: [
                       Text(
                         'Bem-vindo, $nome!',
-                        style: const TextStyle(fontSize: 22),
+                        style: const TextStyle(
+                          fontSize: 22,
+                          color: Colors.white,
+                        ),
                       ),
                       const SizedBox(height: 20),
+                      const SizedBox(height: 4),
                       Card(
                         child: Padding(
                           padding: const EdgeInsets.all(16.0),
@@ -228,14 +232,25 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
             Expanded(
               child: ElevatedButton(
                 onPressed: _abrirCotacao,
-                child: const Text('Ver Cotação'),
+                child: const Text(
+                  'Ver Cotação',
+                  style: TextStyle(
+                    color: Colors.red, 
+                    fontWeight: FontWeight.bold, 
+                  ),
+                ),
               ),
             ),
             const SizedBox(width: 16),
             Expanded(
               child: ElevatedButton(
                 onPressed: _abrirTransferencia,
-                child: const Text('Transferência'),
+                child: const Text(
+                'Transferência',
+                style: TextStyle(
+                    color: Colors.red, 
+                    fontWeight: FontWeight.bold, 
+              ),
               ),
             ),
           ],
