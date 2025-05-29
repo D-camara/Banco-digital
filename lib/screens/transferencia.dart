@@ -3,6 +3,10 @@ import 'package:share_plus/share_plus.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
+class AppColors {
+  static const Color darkRed = Color(0xFF8A0F16);
+}
+
 class TransferenciaScreen extends StatefulWidget {
   final Map<String, dynamic>? args;
   const TransferenciaScreen({Key? key, this.args}) : super(key: key);
@@ -64,6 +68,7 @@ class _TransferenciaScreenState extends State<TransferenciaScreen> {
   Future<void> _selecionarMoeda() async {
     final selecionada = await showModalBottomSheet<String>(
       context: context,
+      backgroundColor: Colors.black,
       builder: (context) => SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -77,8 +82,12 @@ class _TransferenciaScreenState extends State<TransferenciaScreen> {
                         : entry.key == 'EUR'
                             ? Icons.euro
                             : Icons.currency_bitcoin,
+                color: AppColors.darkRed,
               ),
-              title: Text(entry.value),
+              title: Text(
+                entry.value,
+                style: const TextStyle(color: Colors.white),
+              ),
               onTap: () => Navigator.pop(context, entry.key),
             );
           }).toList(),
@@ -141,13 +150,12 @@ class _TransferenciaScreenState extends State<TransferenciaScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(mensagem)),
     );
-    // Retorna os saldos atualizados para a tela principal
     Future.delayed(const Duration(milliseconds: 500), () {
       Navigator.pop(context, {
         'saldoBRL': saldoBRL,
         'saldoUSD': saldoUSD,
         'saldoEUR': saldoEUR,
-        'saldoBTC': saldoBTC, // Retorna BTC
+        'saldoBTC': saldoBTC,
       });
     });
   }
@@ -170,14 +178,18 @@ class _TransferenciaScreenState extends State<TransferenciaScreen> {
     saldoBRL = args['saldoBRL'] ?? 1500.0;
     saldoUSD = args['saldoUSD'] ?? 200.0;
     saldoEUR = args['saldoEUR'] ?? 100.0;
-    saldoBTC = args['saldoBTC'] ?? 1.0; // Inicializa BTC
+    saldoBTC = args['saldoBTC'] ?? 1.0;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text('Transferência'),
+        backgroundColor: Colors.black,
+        title: const Text('Transferência', style: TextStyle(color: Colors.white)),
+        iconTheme: const IconThemeData(color: Colors.white),
+        elevation: 0,
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
@@ -192,11 +204,31 @@ class _TransferenciaScreenState extends State<TransferenciaScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Text('Olá $nome, faça uma transferência:'),
+                      Text(
+                        'Olá $nome, faça uma transferência:',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
                       const SizedBox(height: 20),
-                      Text('Selecione a moeda para transferir:'),
+                      Text(
+                        'Selecione a moeda para transferir:',
+                        style: const TextStyle(color: Colors.white70),
+                      ),
                       const SizedBox(height: 8),
                       ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          foregroundColor: Colors.white,
+                          side: const BorderSide(color: AppColors.darkRed, width: 2),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          textStyle: const TextStyle(fontWeight: FontWeight.bold),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
                         onPressed: _selecionarMoeda,
                         icon: Icon(
                           moedaSelecionada == 'BRL'
@@ -206,45 +238,113 @@ class _TransferenciaScreenState extends State<TransferenciaScreen> {
                                   : moedaSelecionada == 'EUR'
                                       ? Icons.euro
                                       : Icons.currency_bitcoin,
+                          color: AppColors.darkRed,
                         ),
                         label: Text(_moedaNomes[moedaSelecionada]!),
                       ),
                       const SizedBox(height: 10),
                       Text(
                         'Saldo disponível: $simboloMoeda ${moedaSelecionada == 'BTC' ? saldoAtual.toStringAsFixed(6) : saldoAtual.toStringAsFixed(2)}',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                       ),
                       const SizedBox(height: 20),
                       TextField(
                         controller: _destinatarioController,
-                        decoration: const InputDecoration(labelText: 'Destinatário'),
+                        style: const TextStyle(color: Colors.white),
+                        decoration: InputDecoration(
+                          labelText: 'Destinatário',
+                          labelStyle: const TextStyle(color: Colors.white70),
+                          filled: true,
+                          fillColor: const Color(0xFF121212),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(color: Color(0xFF333333)),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(color: Color(0xFF333333)),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(color: AppColors.darkRed),
+                          ),
+                          hintText: 'Digite o destinatário',
+                          hintStyle: const TextStyle(color: Colors.white38),
+                        ),
                       ),
                       const SizedBox(height: 10),
                       TextField(
                         controller: _valorController,
-                        keyboardType: TextInputType.numberWithOptions(decimal: true),
+                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                        style: const TextStyle(color: Colors.white),
                         decoration: InputDecoration(
                           labelText: 'Valor (${_moedaNomes[moedaSelecionada]})',
+                          labelStyle: const TextStyle(color: Colors.white70),
+                          filled: true,
+                          fillColor: const Color(0xFF121212),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(color: Color(0xFF333333)),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(color: Color(0xFF333333)),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(color: AppColors.darkRed),
+                          ),
+                          hintText: 'Digite o valor',
+                          hintStyle: const TextStyle(color: Colors.white38),
                         ),
                       ),
                       const SizedBox(height: 20),
                       ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.darkRed,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          textStyle: const TextStyle(fontWeight: FontWeight.bold),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
                         onPressed: _transferir,
                         child: const Text('Transferir'),
                       ),
+                      const SizedBox(height: 10),
                       ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.darkRed,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          textStyle: const TextStyle(fontWeight: FontWeight.bold),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
                         onPressed: _abrirCamera,
-                        icon: const Icon(Icons.camera_alt),
+                        icon: const Icon(Icons.camera_alt, color: Colors.white),
                         label: const Text('Abrir Câmera'),
                       ),
                       if (_imagemCamera != null) ...[
                         const SizedBox(height: 10),
-                        Image.file(_imagemCamera!, height: 120),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.file(_imagemCamera!, height: 120),
+                        ),
                       ],
                       if (mensagem.isNotEmpty) ...[
                         const SizedBox(height: 20),
-                        Text(mensagem, style: TextStyle(color: Colors.green)),
+                        Text(mensagem, style: const TextStyle(color: Colors.white)),
                         ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.darkRed,
+                            foregroundColor: Colors.white,
+                          ),
                           onPressed: () {
                             Share.share(mensagem);
                           },
@@ -252,15 +352,31 @@ class _TransferenciaScreenState extends State<TransferenciaScreen> {
                         ),
                       ],
                       const Spacer(),
-                      const Divider(),
-                      Text(
-                        'Saldos totais:',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      Container(
+                        color: Colors.black,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Divider(color: Color(0xFF333333)),
+                            const Text(
+                              'Saldos totais:',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white70,
+                              ),
+                            ),
+                            Text('BRL: R\$ ${saldoBRL.toStringAsFixed(2)}',
+                                style: const TextStyle(color: Colors.white70)),
+                            Text('USD: \$ ${saldoUSD.toStringAsFixed(2)}',
+                                style: const TextStyle(color: Colors.white70)),
+                            Text('EUR: € ${saldoEUR.toStringAsFixed(2)}',
+                                style: const TextStyle(color: Colors.white70)),
+                            Text('BTC: ${saldoBTC.toStringAsFixed(6)}',
+                                style: const TextStyle(color: Colors.white70)),
+                          ],
+                        ),
                       ),
-                      Text('BRL: R\$ ${saldoBRL.toStringAsFixed(2)}'),
-                      Text('USD: \$ ${saldoUSD.toStringAsFixed(2)}'),
-                      Text('EUR: € ${saldoEUR.toStringAsFixed(2)}'),
-                      Text('BTC: ${saldoBTC.toStringAsFixed(6)}'),
                     ],
                   ),
                 ),
