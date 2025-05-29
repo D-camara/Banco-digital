@@ -28,6 +28,7 @@ class BancoDigitalApp extends StatelessWidget {
               saldoBRL: args['saldoBRL'] ?? 1500.0,
               saldoUSD: args['saldoUSD'] ?? 200.0,
               saldoEUR: args['saldoEUR'] ?? 100.0,
+              saldoBTC: args['saldoBTC'] ?? 1.0, // Saldo inicial de 1 BTC
             ),
           );
         }

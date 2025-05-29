@@ -11,6 +11,7 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
   late double saldoBRL;
   late double saldoUSD;
   late double saldoEUR;
+  late double saldoBTC; // Novo saldo BTC
   late String nome;
 
   @override
@@ -19,6 +20,7 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
     saldoBRL = 1500.00;
     saldoUSD = 200.00;
     saldoEUR = 100.00;
+    saldoBTC = 1.0; // Inicializa com 1 BTC
     nome = 'Usuário';
   }
 
@@ -30,6 +32,7 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
     if (args['saldoBRL'] != null) saldoBRL = args['saldoBRL'];
     if (args['saldoUSD'] != null) saldoUSD = args['saldoUSD'];
     if (args['saldoEUR'] != null) saldoEUR = args['saldoEUR'];
+    if (args['saldoBTC'] != null) saldoBTC = args['saldoBTC']; // Recebe saldoBTC
   }
 
   Future<void> _abrirCotacao() async {
@@ -40,6 +43,7 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
         'saldoBRL': saldoBRL,
         'saldoUSD': saldoUSD,
         'saldoEUR': saldoEUR,
+        'saldoBTC': saldoBTC, // Envia saldoBTC
       },
     );
     if (result is Map) {
@@ -47,6 +51,7 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
         saldoBRL = result['saldoBRL'] ?? saldoBRL;
         saldoUSD = result['saldoUSD'] ?? saldoUSD;
         saldoEUR = result['saldoEUR'] ?? saldoEUR;
+        saldoBTC = result['saldoBTC'] ?? saldoBTC; // Atualiza saldoBTC
       });
     }
   }
@@ -60,6 +65,7 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
         'saldoBRL': saldoBRL,
         'saldoUSD': saldoUSD,
         'saldoEUR': saldoEUR,
+        'saldoBTC': saldoBTC, // Envia saldoBTC
       },
     );
     if (result is Map) {
@@ -67,6 +73,7 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
         saldoBRL = result['saldoBRL'] ?? saldoBRL;
         saldoUSD = result['saldoUSD'] ?? saldoUSD;
         saldoEUR = result['saldoEUR'] ?? saldoEUR;
+        saldoBTC = result['saldoBTC'] ?? saldoBTC; // Atualiza saldoBTC
       });
     }
   }
@@ -108,6 +115,13 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
                       children: [
                         const Text('Euro (EUR):'),
                         Text('€ ${saldoEUR.toStringAsFixed(2)}'),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('Bitcoin (BTC):'),
+                        Text('${saldoBTC.toStringAsFixed(6)} BTC'),
                       ],
                     ),
                   ],
