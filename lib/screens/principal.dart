@@ -221,24 +221,42 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
       bottomNavigationBar: Container(
         color: const Color.fromARGB(255, 0, 0, 0),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Row(
-          children: [
-            Expanded(
-              child: ElevatedButton(
-                style: botaoPreto,
-                onPressed: _abrirCotacao,
-                child: const Text('Ver Cotação'),
-              ),
+        child: Card(
+          color: Colors.white.withOpacity(0.08), // Card de fundo translúcido
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                // Botão de Cotação com imagem
+                IconButton(
+                  icon: Image.asset(
+                    'assets/cotacao.png',
+                    height: 32,
+                    width: 32,
+                  ),
+                  onPressed: _abrirCotacao,
+                  tooltip: 'Cotação',
+                ),
+                // Botão de Transferência com imagem
+                IconButton(
+                  icon: Image.asset('assets/cart.png', height: 32, width: 32),
+                  onPressed: _abrirTransferencia,
+                  tooltip: 'Transferência',
+                ),
+                // Nova imagem adicionada
+                Image.asset(
+                  'assets/transf.png', // Substitua pelo nome correto do seu asset
+                  height: 32,
+                  width: 32,
+                ),
+              ],
             ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: ElevatedButton(
-                style: botaoPreto,
-                onPressed: _abrirTransferencia,
-                child: const Text('Transferência'),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
