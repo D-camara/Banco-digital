@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class PrincipalScreen extends StatefulWidget {
-  const PrincipalScreen({Key? key}) : super(key: key);
+  const PrincipalScreen({super.key});
 
   @override
   State<PrincipalScreen> createState() => _PrincipalScreenState();
@@ -231,26 +231,23 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
           children: [
             Expanded(
               child: ElevatedButton(
-                onPressed: _abrirCotacao,
-                child: const Text(
-                  'Ver Cotação',
-                  style: TextStyle(
-                    color: Colors.red, 
-                    fontWeight: FontWeight.bold, 
-                  ),
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.red, // Cor do texto
+                  textStyle: const TextStyle(fontWeight: FontWeight.bold),
                 ),
+                onPressed: _abrirCotacao,
+                child: const Text('Ver Cotação'),
               ),
             ),
             const SizedBox(width: 16),
             Expanded(
               child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.red, // Cor do texto
+                  textStyle: const TextStyle(fontWeight: FontWeight.bold),
+                ),
                 onPressed: _abrirTransferencia,
-                child: const Text(
-                'Transferência',
-                style: TextStyle(
-                    color: Colors.red, 
-                    fontWeight: FontWeight.bold, 
-              ),
+                child: const Text('Transferência'),
               ),
             ),
           ],
