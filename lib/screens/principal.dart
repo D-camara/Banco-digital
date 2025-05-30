@@ -222,7 +222,7 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
         color: const Color.fromARGB(255, 0, 0, 0),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Card(
-          color: Colors.white.withOpacity(0.08), // Card de fundo translúcido
+          color: Colors.white.withOpacity(0.08),
           elevation: 4,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
@@ -233,27 +233,21 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 // Botão de Cotação com imagem
-                IconButton(
-                  icon: Image.asset(
+                GestureDetector(
+                  onTap: _abrirCotacao,
+                  child: Image.asset(
                     'assets/cotacao.png',
-                    height: 32,
-                    width: 32,
+                    height: 36,
+                    width: 36,
                   ),
-                  onPressed: _abrirCotacao,
-                  tooltip: 'Cotação',
                 ),
                 // Botão de Transferência com imagem
-                IconButton(
-                  icon: Image.asset('assets/cart.png', height: 32, width: 32),
-                  onPressed: _abrirTransferencia,
-                  tooltip: 'Transferência',
+                GestureDetector(
+                  onTap: _abrirTransferencia,
+                  child: Image.asset('assets/cart.png', height: 40, width: 36),
                 ),
                 // Nova imagem adicionada
-                Image.asset(
-                  'assets/transf.png', // Substitua pelo nome correto do seu asset
-                  height: 32,
-                  width: 32,
-                ),
+                Image.asset('assets/home.png', height: 26, width: 36),
               ],
             ),
           ),
