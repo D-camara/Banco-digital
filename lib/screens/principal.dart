@@ -81,7 +81,10 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
   }
 
   // Estilo padrão para textos brancos
-  static const TextStyle whiteText = TextStyle(color: Colors.white);
+  static const TextStyle whiteText = TextStyle(
+    color: Colors.white,
+    fontSize: 16,
+  );
 
   // Método para as linhas de saldo
   Widget saldoRow(String label, String value) {
@@ -90,8 +93,8 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: whiteText),
-          Text(value, style: whiteText),
+          Text(label, style: whiteText.copyWith(fontSize: 16)),
+          Text(value, style: whiteText.copyWith(fontSize: 16)),
         ],
       ),
     );
@@ -100,14 +103,22 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF8A0F16),
       appBar: AppBar(
         backgroundColor: Colors.black,
         elevation: 0,
         toolbarHeight: 70,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(
+              24,
+            ), // ajuste o valor para mais ou menos arredondado
+          ),
+        ),
         title: Text(
           'Bem-vindo, $nome!',
           style: const TextStyle(
-            fontSize: 18,
+            fontSize: 16,
             color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
@@ -122,97 +133,187 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
       ),
       body: Column(
         children: [
-          Expanded(
-            child: Container(
-              color: const Color(0xFF8A0F16),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 30,
-                  vertical: 0,
-                ),
-                child: SingleChildScrollView(
-                  child: Stack(
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          const SizedBox(height: 46),
-                          const SizedBox(height: 0),
-                          const SizedBox(height: 0),
-                          Card(
-                            color: const Color.fromARGB(255, 0, 0, 0),
-                            elevation: 6,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  saldoRow('Saldo:', ''),
-                                  ExpansionTile(
-                                    tilePadding: const EdgeInsets.symmetric(
-                                      horizontal: 16.0,
-                                    ),
-                                    title: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text('Real (BRL):', style: whiteText),
-                                        Text(
-                                          'R\$ ${saldoBRL.toStringAsFixed(2)}',
-                                          style: whiteText,
-                                        ),
-                                      ],
-                                    ),
-                                    shape: const RoundedRectangleBorder(
-                                      side: BorderSide.none,
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(0),
-                                      ),
-                                    ),
-                                    collapsedShape:
-                                        const RoundedRectangleBorder(
-                                          side: BorderSide.none,
-                                          borderRadius: BorderRadius.all(
-                                            Radius.circular(0),
-                                          ),
-                                        ),
+          // Container vermelho com altura fixa
+          Container(
+            height: 182, // ajuste a altura conforme desejar
+            color: const Color(0xFF8A0F16),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 0),
+              child: SingleChildScrollView(
+                child: Stack(
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        const SizedBox(height: 10),
+                        const SizedBox(height: 0),
+                        const SizedBox(height: 0),
+                        Card(
+                          color: const Color.fromARGB(255, 0, 0, 0),
+                          elevation: 6,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(12.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                saldoRow('Saldo:', ''),
+                                ExpansionTile(
+                                  tilePadding: const EdgeInsets.symmetric(
+                                    horizontal: 16.0,
+                                  ),
+                                  title: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
-                                      saldoRow(
-                                        'Dólar (USD):',
-                                        '\$ ${saldoUSD.toStringAsFixed(2)}',
+                                      Text(
+                                        'Real (BRL):',
+                                        style: whiteText.copyWith(fontSize: 16),
                                       ),
-                                      saldoRow(
-                                        'Euro (EUR):',
-                                        '€ ${saldoEUR.toStringAsFixed(2)}',
-                                      ),
-                                      saldoRow(
-                                        'Bitcoin (BTC):',
-                                        '${saldoBTC.toStringAsFixed(6)} BTC',
+                                      Text(
+                                        'R\$ ${saldoBRL.toStringAsFixed(2)}',
+                                        style: whiteText.copyWith(fontSize: 16),
                                       ),
                                     ],
                                   ),
-                                ],
-                              ),
+                                  shape: const RoundedRectangleBorder(
+                                    side: BorderSide.none,
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(0),
+                                    ),
+                                  ),
+                                  collapsedShape: const RoundedRectangleBorder(
+                                    side: BorderSide.none,
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(0),
+                                    ),
+                                  ),
+                                  children: [
+                                    saldoRow(
+                                      'Dólar (USD):',
+                                      '\$ ${saldoUSD.toStringAsFixed(2)}',
+                                    ),
+                                    saldoRow(
+                                      'Euro (EUR):',
+                                      '€ ${saldoEUR.toStringAsFixed(2)}',
+                                    ),
+                                    saldoRow(
+                                      'Bitcoin (BTC):',
+                                      '${saldoBTC.toStringAsFixed(6)} BTC',
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
                           ),
-                        ],
-                      ),
-                      // Removido o Positioned com a imagem sobreposta
-                    ],
-                  ),
+                        ),
+                      ],
+                    ),
+                    // Removido o Positioned com a imagem sobreposta
+                  ],
                 ),
               ),
             ),
           ),
-          // Novo container para dividir a tela em duas partes
-          Expanded(child: Container(color: const Color.fromARGB(255, 0, 0, 0))),
+          // O preto ocupa todo o espaço restante
+          Expanded(
+            child: Container(
+              color: const Color.fromARGB(255, 0, 0, 0),
+              width: double.infinity,
+              child: ListView(
+                padding: EdgeInsets.zero,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 20.0,
+                      horizontal: 18.0,
+                    ),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Historico de Transações',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Card(
+                    color: const Color(0xFF8A0F16),
+                    elevation: 4,
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 18,
+                      vertical: 8,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: const [
+                          Text(
+                            'Pix recebido de João',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            '+ R\$ 150,00',
+                            style: TextStyle(color: Colors.white, fontSize: 16),
+                          ),
+                          Divider(color: Colors.white54),
+                          Text(
+                            'Pagamento cartão',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            '- R\$ 80,00',
+                            style: TextStyle(color: Colors.white, fontSize: 16),
+                          ),
+                          Divider(color: Colors.white54),
+                          Text(
+                            'Transferência para Maria',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            '- R\$ 200,00',
+                            style: TextStyle(color: Colors.white, fontSize: 16),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  // ...adicione mais cards se quiser...
+                  const SizedBox(
+                    height: 80,
+                  ), // Espaço para não ficar atrás da barra inferior
+                ],
+              ),
+            ),
+          ),
         ],
       ),
       bottomNavigationBar: Container(
-        color: const Color.fromARGB(255, 0, 0, 0),
+        color: const Color(fromARGB(255, 0, 0, 0)),
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 0),
         child: Card(
           color: const Color(0xFF8A0F16),
