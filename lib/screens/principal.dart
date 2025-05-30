@@ -99,13 +99,27 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final ButtonStyle botaoPreto = ElevatedButton.styleFrom(
-      backgroundColor: const Color(0xFF8A0F16),
-      foregroundColor: Colors.white,
-      textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-    );
-
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        elevation: 0,
+        toolbarHeight: 70,
+        title: Text(
+          'Bem-vindo, $nome!',
+          style: const TextStyle(
+            fontSize: 18,
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        automaticallyImplyLeading: false,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: Image.asset("assets/icon.png", height: 40, width: 40),
+          ),
+        ],
+      ),
       body: Column(
         children: [
           Expanded(
@@ -124,16 +138,7 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
                         children: [
                           const SizedBox(height: 46),
                           const SizedBox(height: 0),
-                          // Texto fora do Card
-                          Text(
-                            'Bem-vindo, $nome!',
-                            style: const TextStyle(
-                              fontSize: 16,
-                              color: Colors.white,
-                            ),
-                            textAlign: TextAlign.left,
-                          ),
-                          const SizedBox(height: 80),
+                          const SizedBox(height: 0),
                           Card(
                             color: const Color.fromARGB(255, 0, 0, 0),
                             elevation: 6,
@@ -154,10 +159,7 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
-                                        const Text(
-                                          'Real (BRL):',
-                                          style: whiteText,
-                                        ),
+                                        Text('Real (BRL):', style: whiteText),
                                         Text(
                                           'R\$ ${saldoBRL.toStringAsFixed(2)}',
                                           style: whiteText,
@@ -198,16 +200,7 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
                           ),
                         ],
                       ),
-                      // Imagem sobreposta no canto superior direito
-                      Positioned(
-                        top: 0,
-                        right: 0,
-                        child: Image.asset(
-                          "assets/icon.png",
-                          height: 120,
-                          width: 30,
-                        ),
-                      ),
+                      // Removido o Positioned com a imagem sobreposta
                     ],
                   ),
                 ),
@@ -220,34 +213,40 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
       ),
       bottomNavigationBar: Container(
         color: const Color.fromARGB(255, 0, 0, 0),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 0),
         child: Card(
-          color: Colors.white.withOpacity(0.08),
+          color: const Color(0xFF8A0F16),
           elevation: 4,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 4),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment:
+                  MainAxisAlignment.spaceBetween, // Alinha uniformemente
               children: [
-                // Botão de Cotação com imagem
+                Image.asset('assets/home.png', height: 26, width: 36),
                 GestureDetector(
-                  onTap: _abrirCotacao,
+                  onTap: _abrirTransferencia,
                   child: Image.asset(
-                    'assets/cotacao.png',
+                    'assets/transf.png',
                     height: 36,
                     width: 36,
                   ),
                 ),
-                // Botão de Transferência com imagem
                 GestureDetector(
-                  onTap: _abrirTransferencia,
-                  child: Image.asset('assets/cart.png', height: 40, width: 36),
+                  onTap: _abrirCotacao,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Image.asset(
+                      'assets/cotacao.png',
+                      height: 36,
+                      width: 46,
+                    ),
+                  ),
                 ),
-                // Nova imagem adicionada
-                Image.asset('assets/home.png', height: 26, width: 36),
+                Image.asset('assets/cart.png', height: 36, width: 36),
               ],
             ),
           ),
