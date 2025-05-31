@@ -1,16 +1,64 @@
-# banco_digital
+# Banco Digital
 
-A new Flutter project.
+Aplicativo Flutter de um banco digital fictício, desenvolvido para fins acadêmicos.
 
-## Getting Started
+## Descrição
 
-This project is a starting point for a Flutter application.
+Este projeto simula um banco digital, permitindo ao usuário:
+- Fazer login
+- Visualizar saldos em múltiplas moedas (BRL, USD, EUR, BTC)
+- Consultar cotações em tempo real via API
+- Realizar transferências via Pix (CPF, E-mail ou Número)
+- Visualizar histórico de transações e conversões
+- Compartilhar comprovantes de transferência
+- Utilizar câmera para simular leitura de QR Code
 
-A few resources to get you started if this is your first Flutter project:
+Não há integração com banco de dados real, todos os dados são mantidos em memória durante a execução.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Telas implementadas
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- **Login**
+- **Principal**
+- **Cotação** (com integração de API)
+- **Transferência** (com validação Pix)
+
+## Plugins utilizados
+
+- [`http`](https://pub.dev/packages/http) — Requisições HTTP para API de cotação
+- [`share_plus`](https://pub.dev/packages/share_plus) — Compartilhamento de comprovantes
+- [`image_picker`](https://pub.dev/packages/image_picker) — Acesso à câmera (simulação de QR Code)
+
+## Como rodar e gerar APK
+
+1. Instale as dependências:
+   ```
+   flutter pub get
+   ```
+2. Rode o app em modo debug:
+   ```
+   flutter run
+   ```
+3. Para gerar APK otimizado (split por arquitetura):
+   ```
+   flutter build apk --split-per-abi
+   ```
+   Os APKs estarão em `build/app/outputs/flutter-apk/`.
+
+## Observações importantes
+
+- O histórico de transações é mantido entre as telas via argumentos de rota.
+- O app utiliza rotas nomeadas e passagem de argumentos entre telas.
+- Não há persistência de dados após fechar o app.
+- O projeto está pronto para ser entregue compactado (.zip), incluindo os APKs split.
+
+## Equipe
+
+- [@D-camara](https://github.com/D-camara) — Autor
+- [@aallexandre](https://github.com/aallexandre)
+- [@ErrorDefault27](https://github.com/ErrorDefault27)
+- [@Faidherb](https://github.com/Faidherb) (Pedro Tocantins Faidherb)
+- [@vintaodiniz](https://github.com/vintaodiniz) (Victor Diniz)
+
+---
+
+Projeto desenvolvido para fins didáticos.
