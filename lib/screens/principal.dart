@@ -93,8 +93,8 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: whiteText.copyWith(fontSize: 16)),
-          Text(value, style: whiteText.copyWith(fontSize: 16)),
+          Text(label, style: whiteText.copyWith(fontSize: 15)),
+          Text(value, style: whiteText.copyWith(fontSize: 15)),
         ],
       ),
     );
@@ -107,7 +107,7 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
       appBar: AppBar(
         backgroundColor: Colors.black,
         elevation: 0,
-        toolbarHeight: 70,
+        toolbarHeight: 40,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(
             bottom: Radius.circular(
@@ -118,7 +118,7 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
         title: Text(
           'Bem-vindo, $nome!',
           style: const TextStyle(
-            fontSize: 16,
+            fontSize: 15,
             color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
@@ -135,17 +135,17 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
         children: [
           // Container vermelho com altura fixa
           Container(
-            height: 182, // ajuste a altura conforme desejar
+            height: 250,
             color: const Color(0xFF8A0F16),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 0),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
               child: SingleChildScrollView(
                 child: Stack(
                   children: [
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        const SizedBox(height: 10),
+                        const SizedBox(height: 39),
                         const SizedBox(height: 0),
                         const SizedBox(height: 0),
                         Card(
@@ -161,7 +161,7 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
                               children: [
                                 saldoRow('Saldo:', ''),
                                 ExpansionTile(
-                                  tilePadding: const EdgeInsets.symmetric(
+                                  tilePadding: EdgeInsets.symmetric(
                                     horizontal: 16.0,
                                   ),
                                   title: Row(
@@ -170,21 +170,21 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
                                     children: [
                                       Text(
                                         'Real (BRL):',
-                                        style: whiteText.copyWith(fontSize: 16),
+                                        style: whiteText.copyWith(fontSize: 15),
                                       ),
                                       Text(
                                         'R\$ ${saldoBRL.toStringAsFixed(2)}',
-                                        style: whiteText.copyWith(fontSize: 16),
+                                        style: whiteText.copyWith(fontSize: 15),
                                       ),
                                     ],
                                   ),
-                                  shape: const RoundedRectangleBorder(
+                                  shape: RoundedRectangleBorder(
                                     side: BorderSide.none,
                                     borderRadius: BorderRadius.all(
                                       Radius.circular(0),
                                     ),
                                   ),
-                                  collapsedShape: const RoundedRectangleBorder(
+                                  collapsedShape: RoundedRectangleBorder(
                                     side: BorderSide.none,
                                     borderRadius: BorderRadius.all(
                                       Radius.circular(0),
@@ -220,7 +220,7 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
           // O preto ocupa todo o espaço restante
           Expanded(
             child: Container(
-              color: const Color.fromARGB(255, 0, 0, 0),
+              color: Color.fromARGB(255, 0, 0, 0),
               width: double.infinity,
               child: ListView(
                 padding: EdgeInsets.zero,
@@ -235,7 +235,7 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
                       child: Text(
                         'Historico de Transações',
                         style: const TextStyle(
-                          fontSize: 16,
+                          fontSize: 15,
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                         ),
@@ -262,13 +262,13 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
                             style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
-                              fontSize: 16,
+                              fontSize: 15,
                             ),
                           ),
                           SizedBox(height: 4),
                           Text(
                             '+ R\$ 150,00',
-                            style: TextStyle(color: Colors.white, fontSize: 16),
+                            style: TextStyle(color: Colors.white, fontSize: 15),
                           ),
                           Divider(color: Colors.white54),
                           Text(
@@ -276,13 +276,13 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
                             style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
-                              fontSize: 16,
+                              fontSize: 15,
                             ),
                           ),
                           SizedBox(height: 4),
                           Text(
                             '- R\$ 80,00',
-                            style: TextStyle(color: Colors.white, fontSize: 16),
+                            style: TextStyle(color: Colors.white, fontSize: 15),
                           ),
                           Divider(color: Colors.white54),
                           Text(
@@ -290,13 +290,27 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
                             style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
-                              fontSize: 16,
+                              fontSize: 15,
                             ),
                           ),
                           SizedBox(height: 4),
                           Text(
                             '- R\$ 200,00',
-                            style: TextStyle(color: Colors.white, fontSize: 16),
+                            style: TextStyle(color: Colors.white, fontSize: 15),
+                          ),
+                          SizedBox(height: 12),
+                          // Widget de texto adicionado no card de histórico
+                          Center(
+                            child: Text(
+                              'Ver mais',
+                              style: TextStyle(
+                                color: Color.fromARGB(255, 255, 255, 255),
+                                fontSize: 15,
+                                fontWeight:
+                                    FontWeight.bold, // Já está em negrito
+                                decoration: TextDecoration.underline,
+                              ),
+                            ),
                           ),
                         ],
                       ),
@@ -313,7 +327,7 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
         ],
       ),
       bottomNavigationBar: Container(
-        color: const Color(fromARGB(255, 0, 0, 0)),
+        color: const Color.fromARGB(255, 0, 0, 0),
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 0),
         child: Card(
           color: const Color(0xFF8A0F16),
@@ -324,8 +338,7 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 4),
             child: Row(
-              mainAxisAlignment:
-                  MainAxisAlignment.spaceBetween, // Alinha uniformemente
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Image.asset('assets/home.png', height: 26, width: 36),
                 GestureDetector(
