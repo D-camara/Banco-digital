@@ -93,7 +93,16 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: whiteText.copyWith(fontSize: 15)),
+          Text(
+            label,
+            style: whiteText.copyWith(
+              fontSize: 15,
+              fontWeight:
+                  label == 'Saldo:'
+                      ? FontWeight.bold
+                      : FontWeight.normal, // só "Saldo:" em negrito
+            ),
+          ),
           Text(value, style: whiteText.copyWith(fontSize: 15)),
         ],
       ),
@@ -118,7 +127,7 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
         title: Text(
           'Bem-vindo, $nome!',
           style: const TextStyle(
-            fontSize: 15,
+            fontSize: 17,
             color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
@@ -135,17 +144,17 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
         children: [
           // Container vermelho com altura fixa
           Container(
-            height: 250,
+            height: 200,
             color: const Color(0xFF8A0F16),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+              padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
               child: SingleChildScrollView(
                 child: Stack(
                   children: [
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        const SizedBox(height: 39),
+                        const SizedBox(height: 13),
                         const SizedBox(height: 0),
                         const SizedBox(height: 0),
                         Card(
@@ -235,7 +244,7 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
                       child: Text(
                         'Historico de Transações',
                         style: const TextStyle(
-                          fontSize: 15,
+                          fontSize: 17,
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                         ),
@@ -340,27 +349,45 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Image.asset('assets/home.png', height: 26, width: 36),
+                // Imagem da esquerda (mais para a esquerda)
+                Padding(
+                  padding: const EdgeInsets.only(
+                    right: 12,
+                    top: 8,
+                  ), // ajuste o valor de right
+                  child: Image.asset('assets/home.png', height: 36, width: 36),
+                ),
+                // Imagem do meio (mais para a direita)
                 GestureDetector(
                   onTap: _abrirTransferencia,
-                  child: Image.asset(
-                    'assets/transf.png',
-                    height: 36,
-                    width: 36,
-                  ),
-                ),
-                GestureDetector(
-                  onTap: _abrirCotacao,
                   child: Padding(
-                    padding: const EdgeInsets.only(top: 10),
+                    padding: const EdgeInsets.only(
+                      left: 12,
+                      right: 12,
+                      top: 20,
+                    ), // ajuste left/right
                     child: Image.asset(
-                      'assets/cotacao.png',
+                      'assets/transf.png',
                       height: 36,
-                      width: 46,
+                      width: 36,
                     ),
                   ),
                 ),
-                Image.asset('assets/cart.png', height: 36, width: 36),
+                // Imagem da direita (mais para a direita)
+                GestureDetector(
+                  onTap: _abrirCotacao,
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      left: 12,
+                      top: 8,
+                    ), // ajuste o valor de left
+                    child: Image.asset(
+                      'assets/cotacao.png',
+                      height: 36,
+                      width: 36,
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
