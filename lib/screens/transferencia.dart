@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:flutter/services.dart'; // ADICIONADO para inputFormatters
 
 class AppColors {
   static const Color darkRed = Color(0xFF8A0F16);
@@ -27,6 +28,8 @@ class _TransferenciaScreenState extends State<TransferenciaScreen> {
   late String nome;
   String mensagem = '';
   File? _imagemCamera;
+  List<Map<String, dynamic>> historico = [];
+  String tipoChavePix = 'CPF'; // Novo: tipo de chave Pix
 
   final Map<String, String> _moedaNomes = {
     'BRL': 'Real (BRL)',
@@ -101,8 +104,28 @@ class _TransferenciaScreenState extends State<TransferenciaScreen> {
     }
   }
 
+  String? validarDestinatario(String valor) {
+    if (valor.isEmpty) return 'Informe o destinatário';
+    if (tipoChavePix == 'CPF') {
+      if (!RegExp(r'^\d{11}$').hasMatch(valor)) return 'CPF deve ter 11 dígitos numéricos';
+    } else if (tipoChavePix == 'E-mail') {
+      if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(valor)) return 'E-mail inválido';
+    } else if (tipoChavePix == 'Número') {
+      if (!RegExp(r'^\d{9}$').hasMatch(valor)) return 'Número deve ter 9 dígitos';
+    }
+    return null;
+  }
+
   void _transferir() {
     double valor = double.tryParse(_valorController.text) ?? 0.0;
+    String destinatario = _destinatarioController.text.trim();
+    String? erroDest = validarDestinatario(destinatario);
+    if (erroDest != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(erroDest)),
+      );
+      return;
+    }
     if (valor <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Valor inválido')),
@@ -146,18 +169,15 @@ class _TransferenciaScreenState extends State<TransferenciaScreen> {
           break;
       }
       mensagem = 'Transferência de $valor $moedaSelecionada realizada!';
+      historico.add({
+        'descricao': 'Pix para $destinatario ($tipoChavePix)',
+        'valor': '- $simboloMoeda ${moedaSelecionada == 'BTC' ? valor.toStringAsFixed(6) : valor.toStringAsFixed(2)}',
+        'data': DateTime.now().toIso8601String(),
+      });
     });
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(mensagem)),
     );
-    Future.delayed(const Duration(milliseconds: 500), () {
-      Navigator.pop(context, {
-        'saldoBRL': saldoBRL,
-        'saldoUSD': saldoUSD,
-        'saldoEUR': saldoEUR,
-        'saldoBTC': saldoBTC,
-      });
-    });
   }
 
   Future<void> _abrirCamera() async {
@@ -179,211 +199,289 @@ class _TransferenciaScreenState extends State<TransferenciaScreen> {
     saldoUSD = args['saldoUSD'] ?? 200.0;
     saldoEUR = args['saldoEUR'] ?? 100.0;
     saldoBTC = args['saldoBTC'] ?? 1.0;
+    if (args['historico'] != null && (args['historico'] as List).isNotEmpty) {
+      historico = List<Map<String, dynamic>>.from(args['historico']);
+    } else {
+      historico = [];
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pop(context, {
+          'saldoBRL': saldoBRL,
+          'saldoUSD': saldoUSD,
+          'saldoEUR': saldoEUR,
+          'saldoBTC': saldoBTC,
+          'historico': historico,
+        });
+        return false;
+      },
+      child: Scaffold(
         backgroundColor: Colors.black,
-        title: const Text('Transferência', style: TextStyle(color: Colors.white)),
-        iconTheme: const IconThemeData(color: Colors.white),
-        elevation: 0,
-      ),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          return SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight: constraints.maxHeight,
-                ),
-                child: IntrinsicHeight(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        'Olá $nome, faça uma transferência:',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      Text(
-                        'Selecione a moeda para transferir:',
-                        style: const TextStyle(color: Colors.white70),
-                      ),
-                      const SizedBox(height: 8),
-                      ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.transparent,
-                          foregroundColor: Colors.white,
-                          side: const BorderSide(color: AppColors.darkRed, width: 2),
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          textStyle: const TextStyle(fontWeight: FontWeight.bold),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+        appBar: AppBar(
+          backgroundColor: Colors.black,
+          title: const Text('Transferência', style: TextStyle(color: Colors.white)),
+          iconTheme: const IconThemeData(color: Colors.white),
+          elevation: 0,
+          automaticallyImplyLeading: false, // REMOVE A SETA DE VOLTAR
+        ),
+        body: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minHeight: constraints.maxHeight,
+                  ),
+                  child: IntrinsicHeight(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          'Olá $nome, faça uma transferência:',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
                           ),
                         ),
-                        onPressed: _selecionarMoeda,
-                        icon: Icon(
-                          moedaSelecionada == 'BRL'
-                              ? Icons.attach_money
-                              : moedaSelecionada == 'USD'
-                                  ? Icons.money
-                                  : moedaSelecionada == 'EUR'
-                                      ? Icons.euro
-                                      : Icons.currency_bitcoin,
-                          color: AppColors.darkRed,
-                        ),
-                        label: Text(_moedaNomes[moedaSelecionada]!),
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        'Saldo disponível: $simboloMoeda ${moedaSelecionada == 'BTC' ? saldoAtual.toStringAsFixed(6) : saldoAtual.toStringAsFixed(2)}',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      TextField(
-                        controller: _destinatarioController,
-                        style: const TextStyle(color: Colors.white),
-                        decoration: InputDecoration(
-                          labelText: 'Destinatário',
-                          labelStyle: const TextStyle(color: Colors.white70),
-                          filled: true,
-                          fillColor: const Color(0xFF121212),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(color: Color(0xFF333333)),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(color: Color(0xFF333333)),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(color: AppColors.darkRed),
-                          ),
-                          hintText: 'Digite o destinatário',
-                          hintStyle: const TextStyle(color: Colors.white38),
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      TextField(
-                        controller: _valorController,
-                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                        style: const TextStyle(color: Colors.white),
-                        decoration: InputDecoration(
-                          labelText: 'Valor (${_moedaNomes[moedaSelecionada]})',
-                          labelStyle: const TextStyle(color: Colors.white70),
-                          filled: true,
-                          fillColor: const Color(0xFF121212),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(color: Color(0xFF333333)),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(color: Color(0xFF333333)),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(color: AppColors.darkRed),
-                          ),
-                          hintText: 'Digite o valor',
-                          hintStyle: const TextStyle(color: Colors.white38),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.darkRed,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          textStyle: const TextStyle(fontWeight: FontWeight.bold),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        onPressed: _transferir,
-                        child: const Text('Transferir'),
-                      ),
-                      const SizedBox(height: 10),
-                      ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.darkRed,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          textStyle: const TextStyle(fontWeight: FontWeight.bold),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        onPressed: _abrirCamera,
-                        icon: const Icon(Icons.camera_alt, color: Colors.white),
-                        label: const Text('Abrir Câmera'),
-                      ),
-                      if (_imagemCamera != null) ...[
-                        const SizedBox(height: 10),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.file(_imagemCamera!, height: 120),
-                        ),
-                      ],
-                      if (mensagem.isNotEmpty) ...[
                         const SizedBox(height: 20),
-                        Text(mensagem, style: const TextStyle(color: Colors.white)),
+                        Text(
+                          'Selecione a moeda para transferir:',
+                          style: const TextStyle(color: Colors.white70),
+                        ),
+                        const SizedBox(height: 8),
+                        ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.transparent,
+                            foregroundColor: Colors.white,
+                            side: const BorderSide(color: AppColors.darkRed, width: 2),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            textStyle: const TextStyle(fontWeight: FontWeight.bold),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          onPressed: _selecionarMoeda,
+                          icon: Icon(
+                            moedaSelecionada == 'BRL'
+                                ? Icons.attach_money
+                                : moedaSelecionada == 'USD'
+                                    ? Icons.money
+                                    : moedaSelecionada == 'EUR'
+                                        ? Icons.euro
+                                        : Icons.currency_bitcoin,
+                            color: AppColors.darkRed,
+                          ),
+                          label: Text(_moedaNomes[moedaSelecionada]!),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          'Saldo disponível: $simboloMoeda ${moedaSelecionada == 'BTC' ? saldoAtual.toStringAsFixed(6) : saldoAtual.toStringAsFixed(2)}',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        Text(
+                          'Tipo de chave Pix:',
+                          style: const TextStyle(color: Colors.white70),
+                        ),
+                        const SizedBox(height: 8),
+                        DropdownButton<String>(
+                          value: tipoChavePix,
+                          dropdownColor: Colors.black,
+                          items: ['CPF', 'E-mail', 'Número']
+                              .map((tipo) => DropdownMenuItem(
+                                    value: tipo,
+                                    child: Text(tipo, style: const TextStyle(color: Colors.white)),
+                                  ))
+                              .toList(),
+                          onChanged: (value) {
+                            if (value != null) {
+                              setState(() {
+                                tipoChavePix = value;
+                                _destinatarioController.clear();
+                              });
+                            }
+                          },
+                        ),
+                        const SizedBox(height: 8),
+                        TextField(
+                          controller: _destinatarioController,
+                          style: const TextStyle(color: Colors.white),
+                          keyboardType: tipoChavePix == 'Número' || tipoChavePix == 'CPF'
+                              ? TextInputType.number
+                              : TextInputType.emailAddress,
+                          inputFormatters: tipoChavePix == 'CPF'
+                              ? [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(11)]
+                              : tipoChavePix == 'Número'
+                                  ? [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(9)]
+                                  : [],
+                          decoration: InputDecoration(
+                            labelText: 'Destinatário (${tipoChavePix})',
+                            labelStyle: const TextStyle(color: Colors.white70),
+                            filled: true,
+                            fillColor: const Color(0xFF121212),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: const BorderSide(color: Color(0xFF333333)),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: const BorderSide(color: Color(0xFF333333)),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(color: AppColors.darkRed),
+                            ),
+                            hintText: tipoChavePix == 'CPF'
+                                ? 'Digite o CPF (11 dígitos)'
+                                : tipoChavePix == 'E-mail'
+                                    ? 'Digite o e-mail'
+                                    : 'Digite o número (9 dígitos)',
+                            hintStyle: const TextStyle(color: Colors.white38),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        TextField(
+                          controller: _valorController,
+                          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                          style: const TextStyle(color: Colors.white),
+                          decoration: InputDecoration(
+                            labelText: 'Valor (${_moedaNomes[moedaSelecionada]})',
+                            labelStyle: const TextStyle(color: Colors.white70),
+                            filled: true,
+                            fillColor: const Color(0xFF121212),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: const BorderSide(color: Color(0xFF333333)),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: const BorderSide(color: Color(0xFF333333)),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(color: AppColors.darkRed),
+                            ),
+                            hintText: 'Digite o valor',
+                            hintStyle: const TextStyle(color: Colors.white38),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.darkRed,
                             foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            textStyle: const TextStyle(fontWeight: FontWeight.bold),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
                           ),
+                          onPressed: _transferir,
+                          child: const Text('Transferir'),
+                        ),
+                        const SizedBox(height: 10),
+                        ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.darkRed,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            textStyle: const TextStyle(fontWeight: FontWeight.bold),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          onPressed: _abrirCamera,
+                          icon: const Icon(Icons.qr_code, color: Colors.white),
+                          label: const Text('Ler QR Code'),
+                        ),
+                        if (_imagemCamera != null) ...[
+                          const SizedBox(height: 10),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.file(_imagemCamera!, height: 120),
+                          ),
+                        ],
+                        if (mensagem.isNotEmpty) ...[
+                          const SizedBox(height: 20),
+                          Text(mensagem, style: const TextStyle(color: Colors.white)),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.darkRed,
+                              foregroundColor: Colors.white,
+                            ),
+                            onPressed: () {
+                              Share.share(mensagem);
+                            },
+                            child: const Text('Compartilhar comprovante'),
+                          ),
+                        ],
+                        // ADICIONE ESTE BOTÃO PARA FINALIZAR E VOLTAR
+                        const SizedBox(height: 20),
+                        ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.darkRed,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            textStyle: const TextStyle(fontWeight: FontWeight.bold),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          icon: const Icon(Icons.check),
+                          label: const Text('Finalizar'),
                           onPressed: () {
-                            Share.share(mensagem);
+                            Navigator.pop(context, {
+                              'saldoBRL': saldoBRL,
+                              'saldoUSD': saldoUSD,
+                              'saldoEUR': saldoEUR,
+                              'saldoBTC': saldoBTC,
+                              'historico': historico,
+                            });
                           },
-                          child: const Text('Compartilhar comprovante'),
+                        ),
+                        const Spacer(),
+                        Container(
+                          color: Colors.black,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Divider(color: Color(0xFF333333)),
+                              const Text(
+                                'Saldos totais:',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white70,
+                                ),
+                              ),
+                              Text('BRL: R\$ ${saldoBRL.toStringAsFixed(2)}',
+                                  style: const TextStyle(color: Colors.white70)),
+                              Text('USD: \$ ${saldoUSD.toStringAsFixed(2)}',
+                                  style: const TextStyle(color: Colors.white70)),
+                              Text('EUR: € ${saldoEUR.toStringAsFixed(2)}',
+                                  style: const TextStyle(color: Colors.white70)),
+                              Text('BTC: ${saldoBTC.toStringAsFixed(6)}',
+                                  style: const TextStyle(color: Colors.white70)),
+                            ],
+                          ),
                         ),
                       ],
-                      const Spacer(),
-                      Container(
-                        color: Colors.black,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Divider(color: Color(0xFF333333)),
-                            const Text(
-                              'Saldos totais:',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white70,
-                              ),
-                            ),
-                            Text('BRL: R\$ ${saldoBRL.toStringAsFixed(2)}',
-                                style: const TextStyle(color: Colors.white70)),
-                            Text('USD: \$ ${saldoUSD.toStringAsFixed(2)}',
-                                style: const TextStyle(color: Colors.white70)),
-                            Text('EUR: € ${saldoEUR.toStringAsFixed(2)}',
-                                style: const TextStyle(color: Colors.white70)),
-                            Text('BTC: ${saldoBTC.toStringAsFixed(6)}',
-                                style: const TextStyle(color: Colors.white70)),
-                          ],
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }

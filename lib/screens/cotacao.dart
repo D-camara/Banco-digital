@@ -28,10 +28,7 @@ class _CotacaoScreenState extends State<CotacaoScreen> {
   late double saldoUSD;
   late double saldoEUR;
   late double saldoBTC;
-
-  final List<Map<String, dynamic>> historicoUSD = [];
-  final List<Map<String, dynamic>> historicoEUR = [];
-  final List<Map<String, dynamic>> historicoBTC = [];
+  List<Map<String, dynamic>> historico = [];
 
   @override
   void initState() {
@@ -40,6 +37,13 @@ class _CotacaoScreenState extends State<CotacaoScreen> {
     saldoUSD = widget.saldoUSD;
     saldoEUR = widget.saldoEUR;
     saldoBTC = widget.saldoBTC;
+    // Receber histórico via ModalRoute se vier por argumentos
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+      if (args != null && args['historico'] != null && (args['historico'] as List).isNotEmpty) {
+        historico = List<Map<String, dynamic>>.from(args['historico']);
+      }
+    });
     fetchCotacao();
   }
 
@@ -59,12 +63,12 @@ class _CotacaoScreenState extends State<CotacaoScreen> {
           'BRL': 1.0,
           'BTC': btc,
         };
-        historicoUSD.add({'valor': usd, 'data': now});
-        if (historicoUSD.length > 10) historicoUSD.removeAt(0);
-        historicoEUR.add({'valor': eur, 'data': now});
-        if (historicoEUR.length > 10) historicoEUR.removeAt(0);
-        historicoBTC.add({'valor': btc, 'data': now});
-        if (historicoBTC.length > 10) historicoBTC.removeAt(0);
+        historico.add({
+          'descricao': 'Atualização de cotações',
+          'valor': 'USD: ${usd.toStringAsFixed(2)} | EUR: ${eur.toStringAsFixed(2)} | BTC: ${btc.toStringAsFixed(6)}',
+          'data': now.toIso8601String(),
+        });
+        if (historico.length > 10) historico.removeAt(0);
         carregando = false;
       });
     } else {
@@ -232,6 +236,11 @@ class _CotacaoScreenState extends State<CotacaoScreen> {
           saldoBTC += valorRecebido;
           break;
       }
+      historico.add({
+        'descricao': 'Conversão: $moedaPagadora → $moedaAlvo',
+        'valor': '- $moedaPagadora ${moedaPagadora == 'BTC' ? valorPagador.toStringAsFixed(6) : valorPagador.toStringAsFixed(2)} | + $moedaAlvo ${moedaAlvo == 'BTC' ? valorRecebido.toStringAsFixed(6) : valorRecebido.toStringAsFixed(2)}',
+        'data': DateTime.now().toIso8601String(),
+      });
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -245,6 +254,7 @@ class _CotacaoScreenState extends State<CotacaoScreen> {
       'saldoUSD': saldoUSD,
       'saldoEUR': saldoEUR,
       'saldoBTC': saldoBTC,
+      'historico': historico,
     });
   }
 
@@ -257,6 +267,7 @@ class _CotacaoScreenState extends State<CotacaoScreen> {
           'saldoUSD': saldoUSD,
           'saldoEUR': saldoEUR,
           'saldoBTC': saldoBTC,
+          'historico': historico,
         });
         return false;
       },
@@ -293,11 +304,10 @@ class _CotacaoScreenState extends State<CotacaoScreen> {
                     ),
                   )
                 : ListView(
-                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 40), // <-- padding extra no bottom
+                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 40),
                     children: [
-                      buildHistoricoList(historicoUSD, 'USD'),
-                      buildHistoricoList(historicoEUR, 'EUR'),
-                      buildHistoricoList(historicoBTC, 'BTC'),
+                      // Mostre o histórico completo, sem filtrar por moeda
+                      buildHistoricoList(historico, 'Todas'),
                       const SizedBox(height: 20),
                       _buildCurrencyCard('USD', cotacao!['USD'], AppColors.red, () => comprarMoedaDialog('USD')),
                       const SizedBox(height: 10),
@@ -401,7 +411,7 @@ class _CotacaoScreenState extends State<CotacaoScreen> {
         Padding(
           padding: const EdgeInsets.only(left: 8, bottom: 4, top: 16),
           child: Text(
-            'Histórico $moeda',
+            moeda == 'Todas' ? 'Histórico de Transações' : 'Histórico $moeda',
             style: const TextStyle(
               fontWeight: FontWeight.w600,
               fontSize: 15,
@@ -428,8 +438,14 @@ class _CotacaoScreenState extends State<CotacaoScreen> {
             itemCount: historico.length,
             itemBuilder: (context, index) {
               final item = historico[historico.length - 1 - index];
-              final valor = item['valor'] as double;
-              final data = item['data'] as DateTime;
+              final valor = item['valor'] as String? ?? '';
+              final dataStr = item['data'] as String? ?? '';
+              DateTime? data;
+              try {
+                data = DateTime.parse(dataStr);
+              } catch (_) {
+                data = null;
+              }
               return ListTile(
                 dense: true,
                 leading: Icon(
@@ -438,19 +454,19 @@ class _CotacaoScreenState extends State<CotacaoScreen> {
                   size: 22,
                 ),
                 title: Text(
-                  moeda == 'BTC'
-                      ? 'R\$ ${valor.toStringAsFixed(0)}'
-                      : 'R\$ ${valor.toStringAsFixed(2)}',
+                  valor,
                   style: const TextStyle(
                     fontWeight: FontWeight.w500,
                     fontSize: 15,
                     color: AppColors.gray,
                   ),
                 ),
-                subtitle: Text(
-                  '${data.hour.toString().padLeft(2, '0')}:${data.minute.toString().padLeft(2, '0')} - ${data.day}/${data.month}',
-                  style: const TextStyle(fontSize: 12, color: AppColors.gray),
-                ),
+                subtitle: data != null
+                    ? Text(
+                        '${data.hour.toString().padLeft(2, '0')}:${data.minute.toString().padLeft(2, '0')} - ${data.day}/${data.month}',
+                        style: const TextStyle(fontSize: 12, color: AppColors.gray),
+                      )
+                    : null,
               );
             },
           ),

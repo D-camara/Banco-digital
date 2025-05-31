@@ -13,6 +13,7 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
   late double saldoEUR;
   late double saldoBTC;
   late String nome;
+  List<Map<String, dynamic>> historico = [];
 
   @override
   void initState() {
@@ -22,6 +23,7 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
     saldoEUR = 100.00;
     saldoBTC = 1.0;
     nome = 'Usuário';
+    historico = [];
   }
 
   @override
@@ -35,6 +37,10 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
     saldoUSD = args['saldoUSD'] ?? saldoUSD;
     saldoEUR = args['saldoEUR'] ?? saldoEUR;
     saldoBTC = args['saldoBTC'] ?? saldoBTC;
+    // Só atualize o histórico se vier um novo (não sobrescreva com vazio)
+    if (args['historico'] != null && (args['historico'] as List).isNotEmpty) {
+      historico = List<Map<String, dynamic>>.from(args['historico']);
+    }
   }
 
   Future<void> _abrirCotacao() async {
@@ -46,6 +52,7 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
         'saldoUSD': saldoUSD,
         'saldoEUR': saldoEUR,
         'saldoBTC': saldoBTC,
+        'historico': historico,
       },
     );
     if (result is Map) {
@@ -54,6 +61,10 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
         saldoUSD = result['saldoUSD'] ?? saldoUSD;
         saldoEUR = result['saldoEUR'] ?? saldoEUR;
         saldoBTC = result['saldoBTC'] ?? saldoBTC;
+        // Só atualize o histórico se vier um novo (não sobrescreva com vazio)
+        if (result['historico'] != null && (result['historico'] as List).isNotEmpty) {
+          historico = List<Map<String, dynamic>>.from(result['historico']);
+        }
       });
     }
   }
@@ -68,6 +79,7 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
         'saldoUSD': saldoUSD,
         'saldoEUR': saldoEUR,
         'saldoBTC': saldoBTC,
+        'historico': historico,
       },
     );
     if (result is Map) {
@@ -76,6 +88,9 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
         saldoUSD = result['saldoUSD'] ?? saldoUSD;
         saldoEUR = result['saldoEUR'] ?? saldoEUR;
         saldoBTC = result['saldoBTC'] ?? saldoBTC;
+        if (result['historico'] != null && (result['historico'] as List).isNotEmpty) {
+          historico = List<Map<String, dynamic>>.from(result['historico']);
+        }
       });
     }
   }
@@ -154,9 +169,9 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        const SizedBox(height: 13),
-                        const SizedBox(height: 0),
-                        const SizedBox(height: 0),
+                        SizedBox(height: 13),
+                        SizedBox(height: 0),
+                        SizedBox(height: 0),
                         Card(
                           color: const Color.fromARGB(255, 0, 0, 0),
                           elevation: 6,
@@ -188,14 +203,14 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
                                     ],
                                   ),
                                   shape: RoundedRectangleBorder(
-                                    side: BorderSide.none,
-                                    borderRadius: BorderRadius.all(
+                                    side: const BorderSide(width: 0, color: Colors.transparent),
+                                    borderRadius: const BorderRadius.all(
                                       Radius.circular(0),
                                     ),
                                   ),
                                   collapsedShape: RoundedRectangleBorder(
-                                    side: BorderSide.none,
-                                    borderRadius: BorderRadius.all(
+                                    side: const BorderSide(width: 0, color: Colors.transparent),
+                                    borderRadius: const BorderRadius.all(
                                       Radius.circular(0),
                                     ),
                                   ),
@@ -263,69 +278,49 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          Text(
-                            'Pix recebido de João',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
+                      child: historico.isEmpty
+                          ? const Text(
+                              'Nenhuma transação ainda.',
+                              style: TextStyle(color: Colors.white),
+                            )
+                          : Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                for (var item in historico.take(5).toList().reversed) ...[
+                                  Text(
+                                    item['descricao'] ?? '',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 15,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    item['valor'] ?? '',
+                                    style: const TextStyle(color: Colors.white, fontSize: 15),
+                                  ),
+                                  if (item != historico.first) const Divider(color: Colors.white54),
+                                ],
+                                if (historico.length > 5)
+                                  const SizedBox(height: 12),
+                                if (historico.length > 5)
+                                  Center(
+                                    child: Text(
+                                      'Ver mais',
+                                      style: TextStyle(
+                                        color: Color.fromARGB(255, 255, 255, 255),
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold,
+                                        decoration: TextDecoration.underline,
+                                      ),
+                                    ),
+                                  ),
+                              ],
                             ),
-                          ),
-                          SizedBox(height: 4),
-                          Text(
-                            '+ R\$ 150,00',
-                            style: TextStyle(color: Colors.white, fontSize: 15),
-                          ),
-                          Divider(color: Colors.white54),
-                          Text(
-                            'Pagamento cartão',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                            ),
-                          ),
-                          SizedBox(height: 4),
-                          Text(
-                            '- R\$ 80,00',
-                            style: TextStyle(color: Colors.white, fontSize: 15),
-                          ),
-                          Divider(color: Colors.white54),
-                          Text(
-                            'Transferência para Maria',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                            ),
-                          ),
-                          SizedBox(height: 4),
-                          Text(
-                            '- R\$ 200,00',
-                            style: TextStyle(color: Colors.white, fontSize: 15),
-                          ),
-                          SizedBox(height: 12),
-                          // Widget de texto adicionado no card de histórico
-                          Center(
-                            child: Text(
-                              'Ver mais',
-                              style: TextStyle(
-                                color: Color.fromARGB(255, 255, 255, 255),
-                                fontSize: 15,
-                                fontWeight:
-                                    FontWeight.bold, // Já está em negrito
-                                decoration: TextDecoration.underline,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
                     ),
                   ),
-                  // ...adicione mais cards se quiser...
+                  // ...existing code...
                   const SizedBox(
                     height: 80,
                   ), // Espaço para não ficar atrás da barra inferior
