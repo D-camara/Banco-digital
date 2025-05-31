@@ -9,12 +9,12 @@ class CotacaoScreen extends StatefulWidget {
   final double saldoBTC; // Novo parâmetro
 
   const CotacaoScreen({
-    Key? key,
+    super.key,
     required this.saldoBRL,
     required this.saldoUSD,
     required this.saldoEUR,
     required this.saldoBTC, // Novo parâmetro
-  }) : super(key: key);
+  });
 
   @override
   State<CotacaoScreen> createState() => _CotacaoScreenState();
@@ -46,7 +46,9 @@ class _CotacaoScreenState extends State<CotacaoScreen> {
 
   Future<void> fetchCotacao() async {
     // Substitua 'sua_chave_aqui' pela sua chave da HG Brasil
-    final url = Uri.parse('https://api.hgbrasil.com/finance?format=json&key=784a4c53');
+    final url = Uri.parse(
+      'https://api.hgbrasil.com/finance?format=json&key=784a4c53',
+    );
     final response = await http.get(url);
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -55,12 +57,7 @@ class _CotacaoScreenState extends State<CotacaoScreen> {
       final btc = data['results']['currencies']['BTC']['buy'] * 1.0;
       final now = DateTime.now();
       setState(() {
-        cotacao = {
-          'USD': usd,
-          'EUR': eur,
-          'BRL': 1.0,
-          'BTC': btc,
-        };
+        cotacao = {'USD': usd, 'EUR': eur, 'BRL': 1.0, 'BTC': btc};
         historicoUSD.add({'valor': usd, 'data': now});
         if (historicoUSD.length > 10) historicoUSD.removeAt(0);
         historicoEUR.add({'valor': eur, 'data': now});
@@ -73,9 +70,9 @@ class _CotacaoScreenState extends State<CotacaoScreen> {
       setState(() {
         carregando = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Erro ao carregar cotação')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Erro ao carregar cotação')));
     }
   }
 
@@ -97,10 +94,15 @@ class _CotacaoScreenState extends State<CotacaoScreen> {
               valorPagador = double.tryParse(valorController.text) ?? 0.0;
               if (valorPagador > 0) {
                 // Conversão: quanto da moeda alvo recebo gastando valorPagador da moeda pagadora
-                double pagadoraEmBRL = moedaSelecionada == 'BRL' ? 1.0 : cotacao![moedaSelecionada];
-                double alvoEmBRL = moedaAlvo == 'BRL' ? 1.0 : cotacao![moedaAlvo];
+                double pagadoraEmBRL =
+                    moedaSelecionada == 'BRL'
+                        ? 1.0
+                        : cotacao![moedaSelecionada];
+                double alvoEmBRL =
+                    moedaAlvo == 'BRL' ? 1.0 : cotacao![moedaAlvo];
                 valorRecebido = valorPagador * pagadoraEmBRL / alvoEmBRL;
-                resultadoConversao = 'Você receberá ${valorRecebido.toStringAsFixed(moedaAlvo == 'BTC' ? 6 : 2)} $moedaAlvo';
+                resultadoConversao =
+                    'Você receberá ${valorRecebido.toStringAsFixed(moedaAlvo == 'BTC' ? 6 : 2)} $moedaAlvo';
               } else {
                 resultadoConversao = '';
                 valorRecebido = 0.0;
@@ -115,7 +117,9 @@ class _CotacaoScreenState extends State<CotacaoScreen> {
                 children: [
                   TextField(
                     controller: valorController,
-                    keyboardType: TextInputType.numberWithOptions(decimal: true),
+                    keyboardType: TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
                     decoration: InputDecoration(
                       labelText: 'Quanto deseja gastar em $moedaSelecionada?',
                     ),
@@ -124,10 +128,13 @@ class _CotacaoScreenState extends State<CotacaoScreen> {
                   const SizedBox(height: 10),
                   DropdownButton<String>(
                     value: moedaSelecionada,
-                    items: moedas
-                        .where((m) => m != moedaAlvo)
-                        .map((m) => DropdownMenuItem(value: m, child: Text(m)))
-                        .toList(),
+                    items:
+                        moedas
+                            .where((m) => m != moedaAlvo)
+                            .map(
+                              (m) => DropdownMenuItem(value: m, child: Text(m)),
+                            )
+                            .toList(),
                     onChanged: (value) {
                       if (value != null) {
                         moedaSelecionada = value;
@@ -137,7 +144,10 @@ class _CotacaoScreenState extends State<CotacaoScreen> {
                   ),
                   const SizedBox(height: 10),
                   if (resultadoConversao.isNotEmpty)
-                    Text(resultadoConversao, style: const TextStyle(fontWeight: FontWeight.bold)),
+                    Text(
+                      resultadoConversao,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
                 ],
               ),
               actions: [
@@ -155,7 +165,12 @@ class _CotacaoScreenState extends State<CotacaoScreen> {
                       return;
                     }
                     Navigator.pop(context);
-                    comprarMoeda(moedaAlvo, moedaSelecionada, valorPagador, valorRecebido);
+                    comprarMoeda(
+                      moedaAlvo,
+                      moedaSelecionada,
+                      valorPagador,
+                      valorRecebido,
+                    );
                   },
                   child: const Text('Converter'),
                 ),
@@ -168,7 +183,12 @@ class _CotacaoScreenState extends State<CotacaoScreen> {
   }
 
   // Novo método: valorPagador é quanto desconta da moedaPagadora, valorRecebido é quanto credita na moedaAlvo
-  void comprarMoeda(String moedaAlvo, String moedaPagadora, double valorPagador, double valorRecebido) {
+  void comprarMoeda(
+    String moedaAlvo,
+    String moedaPagadora,
+    double valorPagador,
+    double valorRecebido,
+  ) {
     if (cotacao == null) return;
 
     // Verifica saldo suficiente na moeda pagadora
@@ -189,9 +209,9 @@ class _CotacaoScreenState extends State<CotacaoScreen> {
     }
 
     if (!saldoSuficiente) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Saldo insuficiente')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Saldo insuficiente')));
       return;
     }
 
@@ -228,16 +248,22 @@ class _CotacaoScreenState extends State<CotacaoScreen> {
       }
     });
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Conversão realizada!')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('Conversão realizada!')));
   }
 
-  Widget buildHistoricoList(List<Map<String, dynamic>> historico, String moeda) {
+  Widget buildHistoricoList(
+    List<Map<String, dynamic>> historico,
+    String moeda,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Histórico $moeda', style: const TextStyle(fontWeight: FontWeight.bold)),
+        Text(
+          'Histórico $moeda',
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
         ListView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -250,9 +276,10 @@ class _CotacaoScreenState extends State<CotacaoScreen> {
               dense: true,
               leading: Icon(
                 Icons.trending_up,
-                color: moeda == 'USD'
-                    ? Colors.blue
-                    : moeda == 'EUR'
+                color:
+                    moeda == 'USD'
+                        ? Colors.blue
+                        : moeda == 'EUR'
                         ? Colors.green
                         : Colors.orange,
               ),
@@ -261,7 +288,9 @@ class _CotacaoScreenState extends State<CotacaoScreen> {
                     ? 'R\$ ${valor.toStringAsFixed(0)}'
                     : 'R\$ ${valor.toStringAsFixed(2)}',
               ),
-              subtitle: Text('${data.hour.toString().padLeft(2, '0')}:${data.minute.toString().padLeft(2, '0')} - ${data.day}/${data.month}'),
+              subtitle: Text(
+                '${data.hour.toString().padLeft(2, '0')}:${data.minute.toString().padLeft(2, '0')} - ${data.day}/${data.month}',
+              ),
             );
           },
         ),
@@ -302,61 +331,71 @@ class _CotacaoScreenState extends State<CotacaoScreen> {
             ),
           ],
         ),
-        body: carregando
-            ? const Center(child: CircularProgressIndicator())
-            : cotacao == null
+        body:
+            carregando
+                ? const Center(child: CircularProgressIndicator())
+                : cotacao == null
                 ? const Center(child: Text('Não foi possível obter cotações'))
                 : ListView(
-                    padding: const EdgeInsets.all(16),
-                    children: [
-                      buildHistoricoList(historicoUSD, 'USD'),
-                      buildHistoricoList(historicoEUR, 'EUR'),
-                      buildHistoricoList(historicoBTC, 'BTC'),
-                      const SizedBox(height: 20),
-                      ListTile(
-                        title: const Text('USD'),
-                        trailing: Text('R\$ ${cotacao!['USD'].toStringAsFixed(2)}'),
+                  padding: const EdgeInsets.all(16),
+                  children: [
+                    buildHistoricoList(historicoUSD, 'USD'),
+                    buildHistoricoList(historicoEUR, 'EUR'),
+                    buildHistoricoList(historicoBTC, 'BTC'),
+                    const SizedBox(height: 20),
+                    ListTile(
+                      title: const Text('USD'),
+                      trailing: Text(
+                        'R\$ ${cotacao!['USD'].toStringAsFixed(2)}',
                       ),
-                      ElevatedButton(
-                        onPressed: () => comprarMoedaDialog('USD'),
-                        child: const Text('Comprar Dólar'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () => comprarMoedaDialog('USD'),
+                      child: const Text('Comprar Dólar'),
+                    ),
+                    const SizedBox(height: 10),
+                    ListTile(
+                      title: const Text('EUR'),
+                      trailing: Text(
+                        'R\$ ${cotacao!['EUR'].toStringAsFixed(2)}',
                       ),
-                      const SizedBox(height: 10),
-                      ListTile(
-                        title: const Text('EUR'),
-                        trailing: Text('R\$ ${cotacao!['EUR'].toStringAsFixed(2)}'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () => comprarMoedaDialog('EUR'),
+                      child: const Text('Comprar Euro'),
+                    ),
+                    const SizedBox(height: 10),
+                    ListTile(
+                      title: const Text('BTC'),
+                      trailing: Text(
+                        'R\$ ${cotacao!['BTC'].toStringAsFixed(0)}',
                       ),
-                      ElevatedButton(
-                        onPressed: () => comprarMoedaDialog('EUR'),
-                        child: const Text('Comprar Euro'),
-                      ),
-                      const SizedBox(height: 10),
-                      ListTile(
-                        title: const Text('BTC'),
-                        trailing: Text('R\$ ${cotacao!['BTC'].toStringAsFixed(0)}'),
-                      ),
-                      ElevatedButton(
-                        onPressed: () => comprarMoedaDialog('BTC'),
-                        child: const Text('Comprar Bitcoin'),
-                      ),
-                      const SizedBox(height: 10),
-                      ListTile(
-                        title: const Text('BRL'),
-                        trailing: const Text('R\$ 1.00'),
-                      ),
-                      ElevatedButton(
-                        onPressed: () => comprarMoedaDialog('BRL'),
-                        child: const Text('Comprar Real'),
-                      ),
-                      const SizedBox(height: 30),
-                      const Divider(),
-                      const Text('Seus saldos atualizados:', style: TextStyle(fontWeight: FontWeight.bold)),
-                      Text('Real (BRL): R\$ ${saldoBRL.toStringAsFixed(2)}'),
-                      Text('Dólar (USD): \$ ${saldoUSD.toStringAsFixed(2)}'),
-                      Text('Euro (EUR): € ${saldoEUR.toStringAsFixed(2)}'),
-                      Text('Bitcoin (BTC): ${saldoBTC.toStringAsFixed(6)} BTC'),
-                    ],
-                  ),
+                    ),
+                    ElevatedButton(
+                      onPressed: () => comprarMoedaDialog('BTC'),
+                      child: const Text('Comprar Bitcoin'),
+                    ),
+                    const SizedBox(height: 10),
+                    ListTile(
+                      title: const Text('BRL'),
+                      trailing: const Text('R\$ 1.00'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () => comprarMoedaDialog('BRL'),
+                      child: const Text('Comprar Real'),
+                    ),
+                    const SizedBox(height: 30),
+                    const Divider(),
+                    const Text(
+                      'Seus saldos atualizados:',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    Text('Real (BRL): R\$ ${saldoBRL.toStringAsFixed(2)}'),
+                    Text('Dólar (USD): \$ ${saldoUSD.toStringAsFixed(2)}'),
+                    Text('Euro (EUR): € ${saldoEUR.toStringAsFixed(2)}'),
+                    Text('Bitcoin (BTC): ${saldoBTC.toStringAsFixed(6)} BTC'),
+                  ],
+                ),
       ),
     );
   }

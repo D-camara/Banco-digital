@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
@@ -12,7 +14,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _login() {
     if (_formKey.currentState!.validate()) {
-      Navigator.pushReplacementNamed(context, '/principal', arguments: {'nome': usuario});
+      Navigator.pushReplacementNamed(
+        context,
+        '/principal',
+        arguments: {'nome': usuario},
+      );
     }
   }
 
@@ -29,7 +35,8 @@ class _LoginScreenState extends State<LoginScreen> {
               TextFormField(
                 decoration: InputDecoration(labelText: 'Usuário'),
                 onChanged: (value) => usuario = value,
-                validator: (value) => value!.isEmpty ? 'Informe o usuário' : null,
+                validator:
+                    (value) => value!.isEmpty ? 'Informe o usuário' : null,
               ),
               TextFormField(
                 decoration: InputDecoration(labelText: 'Senha'),
@@ -38,10 +45,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 validator: (value) => value!.isEmpty ? 'Informe a senha' : null,
               ),
               SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _login,
-                child: Text('Entrar'),
-              ),
+              ElevatedButton(onPressed: _login, child: Text('Entrar')),
             ],
           ),
         ),

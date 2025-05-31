@@ -3,7 +3,7 @@ import 'package:share_plus/share_plus.dart';
 
 class TransferenciaScreen extends StatefulWidget {
   final Map<String, dynamic>? args;
-  const TransferenciaScreen({Key? key, this.args}) : super(key: key);
+  const TransferenciaScreen({super.key, this.args});
 
   @override
   State<TransferenciaScreen> createState() => _TransferenciaScreenState();
@@ -33,9 +33,9 @@ class _TransferenciaScreenState extends State<TransferenciaScreen> {
   void _transferir() {
     double valor = double.tryParse(_valorController.text) ?? 0.0;
     if (valor <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Valor inválido')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Valor inválido')));
       return;
     }
     bool saldoSuficiente = false;
@@ -51,9 +51,9 @@ class _TransferenciaScreenState extends State<TransferenciaScreen> {
         break;
     }
     if (!saldoSuficiente) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Saldo insuficiente')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Saldo insuficiente')));
       return;
     }
     setState(() {
@@ -70,9 +70,9 @@ class _TransferenciaScreenState extends State<TransferenciaScreen> {
       }
       mensagem = 'Transferência de $valor $moedaSelecionada realizada!';
     });
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(mensagem)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(mensagem)));
     // Retorna os saldos atualizados para a tela principal
     Future.delayed(const Duration(milliseconds: 500), () {
       Navigator.pop(context, {
@@ -86,9 +86,7 @@ class _TransferenciaScreenState extends State<TransferenciaScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Transferência'),
-      ),
+      appBar: AppBar(title: const Text('Transferência')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
