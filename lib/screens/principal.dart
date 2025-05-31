@@ -11,7 +11,7 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
   late double saldoBRL;
   late double saldoUSD;
   late double saldoEUR;
-  late double saldoBTC; // Novo saldo BTC
+  late double saldoBTC;
   late String nome;
 
   @override
@@ -20,7 +20,7 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
     saldoBRL = 1500.00;
     saldoUSD = 200.00;
     saldoEUR = 100.00;
-    saldoBTC = 1.0; // Inicializa com 1 BTC
+    saldoBTC = 1.0;
     nome = 'Usuário';
   }
 
@@ -31,10 +31,10 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>? ??
         {};
     nome = args['nome'] ?? nome;
-    if (args['saldoBRL'] != null) saldoBRL = args['saldoBRL'];
-    if (args['saldoUSD'] != null) saldoUSD = args['saldoUSD'];
-    if (args['saldoEUR'] != null) saldoEUR = args['saldoEUR'];
-    if (args['saldoBTC'] != null) saldoBTC = args['saldoBTC'];
+    saldoBRL = args['saldoBRL'] ?? saldoBRL;
+    saldoUSD = args['saldoUSD'] ?? saldoUSD;
+    saldoEUR = args['saldoEUR'] ?? saldoEUR;
+    saldoBTC = args['saldoBTC'] ?? saldoBTC;
   }
 
   Future<void> _abrirCotacao() async {
@@ -80,177 +80,290 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
     }
   }
 
+  // Estilo padrão para textos brancos
+  static const TextStyle whiteText = TextStyle(
+    color: Colors.white,
+    fontSize: 16,
+  );
+
+  // Método para as linhas de saldo
+  Widget saldoRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label, style: whiteText.copyWith(fontSize: 15)),
+          Text(value, style: whiteText.copyWith(fontSize: 15)),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Banco Digital')),
+      backgroundColor: const Color(0xFF8A0F16),
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        elevation: 0,
+        toolbarHeight: 40,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(
+              24,
+            ), // ajuste o valor para mais ou menos arredondado
+          ),
+        ),
+        title: Text(
+          'Bem-vindo, $nome!',
+          style: const TextStyle(
+            fontSize: 15,
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        automaticallyImplyLeading: false,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: Image.asset("assets/icon.png", height: 40, width: 40),
+          ),
+        ],
+      ),
       body: Column(
         children: [
-          Expanded(
-            child: Container(
-              color: const Color(0xFF8A0F16),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        'Bem-vindo, $nome!',
-                        style: const TextStyle(
-                          fontSize: 22,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      const SizedBox(height: 4),
-                      Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            children: [
-                              // Linha do "Saldo:" alinhada igual às moedas
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16.0,
-                                ),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    const Text(
-                                      'Saldo:',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
+          // Container vermelho com altura fixa
+          Container(
+            height: 250,
+            color: const Color(0xFF8A0F16),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+              child: SingleChildScrollView(
+                child: Stack(
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        const SizedBox(height: 39),
+                        const SizedBox(height: 0),
+                        const SizedBox(height: 0),
+                        Card(
+                          color: const Color.fromARGB(255, 0, 0, 0),
+                          elevation: 6,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(12.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                saldoRow('Saldo:', ''),
+                                ExpansionTile(
+                                  tilePadding: EdgeInsets.symmetric(
+                                    horizontal: 16.0,
+                                  ),
+                                  title: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        'Real (BRL):',
+                                        style: whiteText.copyWith(fontSize: 15),
                                       ),
-                                    ),
-                                    Opacity(
-                                      opacity: 0,
-                                      child: Text(
+                                      Text(
                                         'R\$ ${saldoBRL.toStringAsFixed(2)}',
+                                        style: whiteText.copyWith(fontSize: 15),
                                       ),
+                                    ],
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    side: BorderSide.none,
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(0),
                                     ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(height: 0),
-                              ExpansionTile(
-                                tilePadding: const EdgeInsets.symmetric(
-                                  horizontal: 16.0,
-                                ),
-                                title: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                  ),
+                                  collapsedShape: RoundedRectangleBorder(
+                                    side: BorderSide.none,
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(0),
+                                    ),
+                                  ),
                                   children: [
-                                    const Text('Real (BRL):'),
-                                    Text('R\$ ${saldoBRL.toStringAsFixed(2)}'),
+                                    saldoRow(
+                                      'Dólar (USD):',
+                                      '\$ ${saldoUSD.toStringAsFixed(2)}',
+                                    ),
+                                    saldoRow(
+                                      'Euro (EUR):',
+                                      '€ ${saldoEUR.toStringAsFixed(2)}',
+                                    ),
+                                    saldoRow(
+                                      'Bitcoin (BTC):',
+                                      '${saldoBTC.toStringAsFixed(6)} BTC',
+                                    ),
                                   ],
                                 ),
-                                shape: const RoundedRectangleBorder(
-                                  side: BorderSide.none,
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(0),
-                                  ),
-                                ),
-                                collapsedShape: const RoundedRectangleBorder(
-                                  side: BorderSide.none,
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(0),
-                                  ),
-                                ),
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 16.0,
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        const Text('Dólar (USD):'),
-                                        Text(
-                                          '\$ ${saldoUSD.toStringAsFixed(2)}',
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 16.0,
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        const Text('Euro (EUR):'),
-                                        Text(
-                                          '€ ${saldoEUR.toStringAsFixed(2)}',
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 16.0,
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        const Text('Bitcoin (BTC):'),
-                                        Text(
-                                          '${saldoBTC.toStringAsFixed(6)} BTC',
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
+                    // Removido o Positioned com a imagem sobreposta
+                  ],
                 ),
               ),
             ),
           ),
+          // O preto ocupa todo o espaço restante
           Expanded(
             child: Container(
-              color: const Color(0xFF000000), // Cor da metade inferior
+              color: Color.fromARGB(255, 0, 0, 0),
+              width: double.infinity,
+              child: ListView(
+                padding: EdgeInsets.zero,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 20.0,
+                      horizontal: 18.0,
+                    ),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Historico de Transações',
+                        style: const TextStyle(
+                          fontSize: 15,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Card(
+                    color: const Color(0xFF8A0F16),
+                    elevation: 4,
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 18,
+                      vertical: 8,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: const [
+                          Text(
+                            'Pix recebido de João',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                            ),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            '+ R\$ 150,00',
+                            style: TextStyle(color: Colors.white, fontSize: 15),
+                          ),
+                          Divider(color: Colors.white54),
+                          Text(
+                            'Pagamento cartão',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                            ),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            '- R\$ 80,00',
+                            style: TextStyle(color: Colors.white, fontSize: 15),
+                          ),
+                          Divider(color: Colors.white54),
+                          Text(
+                            'Transferência para Maria',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                            ),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            '- R\$ 200,00',
+                            style: TextStyle(color: Colors.white, fontSize: 15),
+                          ),
+                          SizedBox(height: 12),
+                          // Widget de texto adicionado no card de histórico
+                          Center(
+                            child: Text(
+                              'Ver mais',
+                              style: TextStyle(
+                                color: Color.fromARGB(255, 255, 255, 255),
+                                fontSize: 15,
+                                fontWeight:
+                                    FontWeight.bold, // Já está em negrito
+                                decoration: TextDecoration.underline,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  // ...adicione mais cards se quiser...
+                  const SizedBox(
+                    height: 80,
+                  ), // Espaço para não ficar atrás da barra inferior
+                ],
+              ),
             ),
           ),
         ],
       ),
       bottomNavigationBar: Container(
-        color: const Color(0xFF000000),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Row(
-          children: [
-            Expanded(
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.red, // Cor do texto
-                  textStyle: const TextStyle(fontWeight: FontWeight.bold),
+        color: const Color.fromARGB(255, 0, 0, 0),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 0),
+        child: Card(
+          color: const Color(0xFF8A0F16),
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 4),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Image.asset('assets/home.png', height: 26, width: 36),
+                GestureDetector(
+                  onTap: _abrirTransferencia,
+                  child: Image.asset(
+                    'assets/transf.png',
+                    height: 36,
+                    width: 36,
+                  ),
                 ),
-                onPressed: _abrirCotacao,
-                child: const Text('Ver Cotação'),
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.red, // Cor do texto
-                  textStyle: const TextStyle(fontWeight: FontWeight.bold),
+                GestureDetector(
+                  onTap: _abrirCotacao,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Image.asset(
+                      'assets/cotacao.png',
+                      height: 36,
+                      width: 46,
+                    ),
+                  ),
                 ),
-                onPressed: _abrirTransferencia,
-                child: const Text('Transferência'),
-              ),
+                Image.asset('assets/cart.png', height: 36, width: 36),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
