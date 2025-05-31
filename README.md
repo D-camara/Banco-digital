@@ -53,9 +53,9 @@ Não há integração com banco de dados real, todos os dados são mantidos em m
 
 ## Equipe
 
-- [@D-camara](https://github.com/D-camara) — Autor
-- [@aallexandre](https://github.com/aallexandre)
-- [@ErrorDefault27](https://github.com/ErrorDefault27)
+- [@D-camara](https://github.com/D-camara) (Daniel Camara)
+- [@aallexandre](https://github.com/aallexandre) (Alexandre Nunes)
+- [@ErrorDefault27](https://github.com/ErrorDefault27) (Edgar Caua)
 - [@Faidherb](https://github.com/Faidherb) (Pedro Tocantins Faidherb)
 - [@vintaodiniz](https://github.com/vintaodiniz) (Victor Diniz)
 
