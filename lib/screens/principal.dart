@@ -93,16 +93,7 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            label,
-            style: whiteText.copyWith(
-              fontSize: 15,
-              fontWeight:
-                  label == 'Saldo:'
-                      ? FontWeight.bold
-                      : FontWeight.normal, // só "Saldo:" em negrito
-            ),
-          ),
+          Text(label, style: whiteText.copyWith(fontSize: 15)),
           Text(value, style: whiteText.copyWith(fontSize: 15)),
         ],
       ),
@@ -127,7 +118,7 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
         title: Text(
           'Bem-vindo, $nome!',
           style: const TextStyle(
-            fontSize: 17,
+            fontSize: 15,
             color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
@@ -144,17 +135,17 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
         children: [
           // Container vermelho com altura fixa
           Container(
-            height: 200,
+            height: 250,
             color: const Color(0xFF8A0F16),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
               child: SingleChildScrollView(
                 child: Stack(
                   children: [
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        const SizedBox(height: 13),
+                        const SizedBox(height: 39),
                         const SizedBox(height: 0),
                         const SizedBox(height: 0),
                         Card(
@@ -244,7 +235,7 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
                       child: Text(
                         'Historico de Transações',
                         style: const TextStyle(
-                          fontSize: 17,
+                          fontSize: 15,
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                         ),
@@ -349,6 +340,7 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+<<<<<<< HEAD
                 // Imagem da esquerda
                 Padding(
                   padding: const EdgeInsets.only(right: 12, top: 0),
@@ -371,13 +363,29 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
                   onTap: _abrirCotacao,
                   child: Padding(
                     padding: const EdgeInsets.only(left: 12, top: 0),
+=======
+                Image.asset('assets/home.png', height: 26, width: 36),
+                GestureDetector(
+                  onTap: _abrirTransferencia,
+                  child: Image.asset(
+                    'assets/transf.png',
+                    height: 36,
+                    width: 36,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: _abrirCotacao,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 10),
+>>>>>>> cb44ec6c11b69221f18e40ad656f284fc6ee1f3b
                     child: Image.asset(
                       'assets/cotacao.png',
                       height: 36,
-                      width: 36,
+                      width: 46,
                     ),
                   ),
                 ),
+                Image.asset('assets/cart.png', height: 36, width: 36),
               ],
             ),
           ),
