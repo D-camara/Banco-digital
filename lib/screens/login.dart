@@ -27,11 +27,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [AppColors.red, AppColors.darkRed],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
+          color: AppColors.black, // Fundo preto
         ),
         child: Center(
           child: Container(
@@ -47,6 +43,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   offset: Offset(0, 6),
                 ),
               ],
+              border: Border.all(
+                color: AppColors.red, // Detalhe em vermelho
+                width: 2,
+              ),
             ),
             child: ConstrainedBox(
               constraints: BoxConstraints(maxWidth: 400),
@@ -60,24 +60,37 @@ class _LoginScreenState extends State<LoginScreen> {
                       style: TextStyle(
                         fontSize: 26,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.red,
+                        color: AppColors.red, // Detalhe em vermelho
                       ),
                     ),
                     SizedBox(height: 20),
                     TextFormField(
+                      style: TextStyle(
+                        color: Colors.white,
+                      ), // Texto digitado em branco
                       decoration: InputDecoration(
                         labelText: 'Usuário',
-                        prefixIcon: Icon(Icons.person),
+                        labelStyle: TextStyle(
+                          color: Colors.white,
+                        ), // Label em branco
+                        prefixIcon: Icon(
+                          Icons.person,
+                          color: AppColors.red,
+                        ), // Detalhe em vermelho
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: AppColors.red),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: AppColors.red,
+                            width: 2,
+                          ),
                         ),
                       ),
                       inputFormatters: [
-                        FilteringTextInputFormatter.allow(
-                          RegExp(
-                            r'[a-zA-Z]+',
-                          ), // Apenas letras maiúsculas e minúsculas
-                        ),
+                        FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z]+')),
                       ],
                       onChanged: (value) => usuario = value,
                       validator:
@@ -86,15 +99,25 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     SizedBox(height: 16),
                     TextFormField(
+                      style: TextStyle(
+                        color: Colors.white,
+                      ), // Texto digitado em branco
                       obscureText: _obscurePassword,
                       decoration: InputDecoration(
                         labelText: 'Senha',
-                        prefixIcon: Icon(Icons.lock),
+                        labelStyle: TextStyle(
+                          color: Colors.white,
+                        ), // Label em branco
+                        prefixIcon: Icon(
+                          Icons.lock,
+                          color: AppColors.red,
+                        ), // Detalhe em vermelho
                         suffixIcon: IconButton(
                           icon: Icon(
                             _obscurePassword
                                 ? Icons.visibility
                                 : Icons.visibility_off,
+                            color: AppColors.red, // Detalhe em vermelho
                           ),
                           onPressed: () {
                             setState(() {
@@ -104,6 +127,14 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: AppColors.red),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: AppColors.red,
+                            width: 2,
+                          ),
                         ),
                       ),
                       onChanged: (value) => senha = value,
@@ -148,6 +179,6 @@ class AppColors {
   static const Color red = Color(0xFFB5121B);
   static const Color darkRed = Color(0xFF8A0F16);
   static const Color gray = Color(0xFFEEEEEE);
-  static const Color white = Color(0xFFFFFFFF);
+  static const Color white = Color(0xFF232323); // Alterado para cinza escuro
   static const Color black = Color(0xFF000000);
 }
