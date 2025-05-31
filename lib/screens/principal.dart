@@ -349,23 +349,16 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Imagem da esquerda (mais para a esquerda)
+                // Imagem da esquerda
                 Padding(
-                  padding: const EdgeInsets.only(
-                    right: 12,
-                    top: 8,
-                  ), // ajuste o valor de right
+                  padding: const EdgeInsets.only(right: 12, top: 0),
                   child: Image.asset('assets/home.png', height: 36, width: 36),
                 ),
-                // Imagem do meio (mais para a direita)
+                // Imagem do meio (transf) alinhada igual as outras
                 GestureDetector(
                   onTap: _abrirTransferencia,
                   child: Padding(
-                    padding: const EdgeInsets.only(
-                      left: 12,
-                      right: 12,
-                      top: 20,
-                    ), // ajuste left/right
+                    padding: const EdgeInsets.only(top: 0),
                     child: Image.asset(
                       'assets/transf.png',
                       height: 36,
@@ -373,14 +366,11 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
                     ),
                   ),
                 ),
-                // Imagem da direita (mais para a direita)
+                // Imagem da direita
                 GestureDetector(
                   onTap: _abrirCotacao,
                   child: Padding(
-                    padding: const EdgeInsets.only(
-                      left: 12,
-                      top: 8,
-                    ), // ajuste o valor de left
+                    padding: const EdgeInsets.only(left: 12, top: 0),
                     child: Image.asset(
                       'assets/cotacao.png',
                       height: 36,
