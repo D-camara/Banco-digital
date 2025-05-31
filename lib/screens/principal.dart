@@ -348,19 +348,19 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
                 Padding(
                   padding: const EdgeInsets.only(
                     right: 12,
-                    top: 8,
-                  ), // ajuste o valor de right
+                    top: 0,
+                  ),
                   child: Image.asset('assets/home.png', height: 36, width: 36),
                 ),
-                // Imagem do meio (mais para a direita)
+                // Imagem do meio (agora alinhada com as outras)
                 GestureDetector(
                   onTap: _abrirTransferencia,
                   child: Padding(
                     padding: const EdgeInsets.only(
                       left: 12,
                       right: 12,
-                      top: 20,
-                    ), // ajuste left/right
+                      top: 0, // alinhado com as outras imagens
+                    ),
                     child: Image.asset(
                       'assets/transf.png',
                       height: 36,
@@ -374,8 +374,8 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
                   child: Padding(
                     padding: const EdgeInsets.only(
                       left: 12,
-                      top: 8,
-                    ), // ajuste o valor de left
+                      top: 0,
+                    ),
                     child: Image.asset(
                       'assets/cotacao.png',
                       height: 36,
