@@ -24,14 +24,11 @@ migrate_working_dir/
 #.vscode/
 
 # Flutter/Dart/Pub related
-**/doc/api/
-**/ios/Flutter/.last_build_id
 .dart_tool/
-.flutter-plugins
-.flutter-plugins-dependencies
+.packages
 .pub-cache/
 .pub/
-/build/
+/build/   # Remova ou comente esta linha para permitir o commit da pasta build
 
 # Symbolication related
 app.*.symbols
